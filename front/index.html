@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Librería POO</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <!-- Librería de iconos (FontAwesome): Iconos del menu superior -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+    <header class="navbar">
+        <div class="logo">
+            <h1>Librería<span class="highlight">POO</span></h1>
+        </div>
+
+        <!-- Buscador -->
+        <div class="search-container">
+            <input type="text" placeholder="Buscar por título, autor..." id="buscador">
+            <button type="button"><i class="fas fa-search"></i></button>
+        </div>
+
+        <!-- Menú y Acciones -->
+        <nav class="nav-links">
+            <ul class="menuPrincipal">
+                <!-- Boton que solo vera el administrador para acceder a su panel -->
+                <li id="item-admin" style="display: none;">
+                    <a href="./html/admin.html" style="color: var(--amarillo-acento);">
+                        <i class="fas fa-cogs"></i> Panel Admin
+                    </a>
+                </li>
+                <!-- Categorías con Submenú -->
+                <li class="dropdown">
+                    <a href="#">Categorías <i class="fas fa-chevron-down" style="font-size: 12px;"></i></a>
+                    <ul class="submenu">
+                        <li><a href="#">Fantasía</a></li>
+                        <li><a href="#">Terror y Suspense</a></li>
+                        <li><a href="#">Ciencia Ficción</a></li>
+                        <li><a href="#">Drama</a></li>
+                    </ul>
+                </li>
+                <!-- Iconos de acción -->
+                <li><a href="./html/login.html" title="Lista de Deseos"><i class="fas fa-heart"></i></a></li>
+                <li><a href="./html/login.html" title="Carrito"><i class="fas fa-shopping-cart"></i></a></li>
+                <li>
+                    <a href="./html/login.html" class="btn-login" id="enlace-usuario" title="Perfil">
+                        <i class="fas fa-user"></i> <span id="texto-bienvenida"></span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="container">
+
+        <!-- SECCIÓN 1: LIBROS DESTACADOS -->
+        <section class="seccion-inicio" id="destacados">
+            <h2>Libros Destacados</h2>
+            <div class="grid-libros" id="contenedor-destacados">
+                <div class="tarjeta-libro">
+                    <div class="portada-placeholder">Portada</div>
+                    <h3 class="titulo">Alas de hierro</h3>
+                    <p class="autor">Rebecca Yarros</p>
+                    <p class="precio">22.90 €</p>
+                    <button class="btn-agregar"><i class="fas fa-cart-plus"></i> Añadir</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: NOVEDADES Y SAGAS -->
+        <section class="seccion-inicio" id="sagas">
+            <h2>Sagas y Continuaciones</h2>
+            <div class="grid-libros" id="contenedor-sagas">
+                <div class="tarjeta-libro">
+                    <div class="portada-placeholder">Portada</div>
+                    <h3 class="titulo">Alas de ónix</h3>
+                    <p class="autor">Rebecca Yarros</p>
+                    <p class="precio">23.90 €</p>
+                    <button class="btn-agregar"><i class="fas fa-cart-plus"></i> Añadir</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: AUTORES DESTACADOS -->
+        <section class="seccion-inicio" id="autores">
+            <h2>Autores Destacados</h2>
+            <div class="grid-autores" id="contenedor-autores">
+                <!-- Aquí inyectaremos los autores en el futuro. Ejemplo: -->
+                <div class="tarjeta-autor">
+                    <div class="avatar-placeholder"><i class="fas fa-user-edit"></i></div>
+                    <h3>Stephen King</h3>
+                    <a href="#" class="enlace-autor">Ver sus obras</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: PARA PROFESIONALES -->
+        <section class="seccion-inicio" id="tecnicos">
+            <h2>Preparación y Desarrollo</h2>
+            <div class="grid-libros" id="contenedor-tecnicos">
+                <div class="tarjeta-libro">
+                    <div class="portada-placeholder">Portada</div>
+                    <h3 class="titulo">Java Full-Stack</h3>
+                    <p class="autor">Varios Autores</p>
+                    <p class="precio">35.00 €</p>
+                    <button class="btn-agregar"><i class="fas fa-cart-plus"></i> Añadir</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="footer-principal">
+        <div class="footer-contenido">
+            <div class="footer-columna">
+                <h3>Librería POO</h3>
+                <p>Tu rincón literario de confianza. Encuentra las mejores historias y manuales técnicos.</p>
+            </div>
+            <div class="footer-columna">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                    <li><a href="#">Sobre Nosotros</a></li>
+                    <li><a href="#">Contacto</a></li>
+                    <li><a href="#">Política de Privacidad</a></li>
+                </ul>
+            </div>
+            <div class="footer-columna">
+                <h3>Síguenos</h3>
+                <div class="redes-sociales">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Librería POO. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+    <script src="./js/index.js"></script>
+</body>
+
+</html>

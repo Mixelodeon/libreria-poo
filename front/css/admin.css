@@ -1,0 +1,141 @@
+/* Layout General del Admin */
+.admin-body {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f1f5f9;
+    /* Un fondo un poco más gris para el panel */
+}
+
+/* --- SIDEBAR LATERAL --- */
+.sidebar {
+    width: 260px;
+    background-color: var(--texto-oscuro);
+    color: var(--blanco-puro);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+}
+
+.sidebar-logo {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 20px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    flex-grow: 1;
+    /* Empuja el menú de abajo hacia el final */
+}
+
+.sidebar-menu li a {
+    display: block;
+    padding: 15px 25px;
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.sidebar-menu li a i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-menu li a:hover,
+.sidebar-menu li a.activo {
+    background-color: var(--verde-principal);
+    color: var(--blanco-puro);
+    border-left: 4px solid var(--amarillo-acento);
+}
+
+.sidebar-bottom {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-bottom a {
+    display: block;
+    color: #cbd5e1;
+    text-decoration: none;
+    padding: 10px 0;
+    transition: color 0.3s;
+}
+
+.sidebar-bottom a:hover {
+    color: var(--blanco-puro);
+}
+
+/* --- CONTENIDO PRINCIPAL --- */
+.admin-content {
+    margin-left: 260px;
+    /* Deja espacio para la sidebar fija */
+    flex-grow: 1;
+    padding: 40px;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.admin-perfil {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: var(--blanco-puro);
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    font-weight: bold;
+}
+
+/* --- FORMULARIO --- */
+.admin-panel {
+    background: var(--blanco-puro);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.formulario-admin .form-grupo {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.formulario-admin .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Sobrescribimos el grid a 3 columnas si hay 3 elementos */
+.formulario-admin .form-row:has(> :nth-child(3)) {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.formulario-admin label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--texto-oscuro);
+}
+
+.formulario-admin input,
+.formulario-admin select {
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    font-size: 15px;
+    transition: border-color 0.3s;
+}
+
+.formulario-admin input:focus,
+.formulario-admin select:focus {
+    border-color: var(--verde-principal);
+}

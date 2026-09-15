@@ -1,0 +1,7 @@
+Explicación BD: 
+Usuario: El usuario guarda 0 o varios libros en su carrito. (0:N)
+Libro: Un libro es guardado por 0 o varios usuarios en su carrito. (0:N)
+Relación Agregar_a_carrito, Usuario/Libro N:M (Crea la tabla carrito añadiendo cantidad, como atributo)
+Usuario: El usuario guarda 0 o varios libros en su lista de deseo. (0:N)
+Libro: Un libro es guardado por 0 o varios usuarios en sus listas de deso. (0:N)
+Relación Guardar_en_deseo, Usuario/Libro N:M (Se crea la tabla listaDeseo, esta vez sin añadir atributo)

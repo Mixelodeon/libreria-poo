@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mikel_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root # Contraseña sencilla
+      MYSQL_DATABASE: libreria_poo
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # --- AQUÍ ESTÁ LA MAGIA PARA EL NAVEGADOR ---
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: mikel_phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:

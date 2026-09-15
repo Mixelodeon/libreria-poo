@@ -1,0 +1,65 @@
+package PO_Objetos.Libreria.back;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class UsuarioDAO {
+    // Esta clase se usa
+    // Este metodo recibe el objeto usuario recien creado sin id ni rol
+    public boolean registrarUsuario(Usuario nuevoUsuario) {
+        String sql = "INSERT INTO usuarios (nombre, apellidos, email, password) VALUE (?, ?, ?, ?)";
+
+        try {
+            // Pide conexion a la clase conexionBD
+            Connection con = ConexionBD.getConexion();
+            PreparedStatement pstmt = con.prepareStatement(sql);
+
+            // Se sustituyen las interrogantes '?' por los datos reales del objeto usando
+            // getters
+            pstmt.setString(1, nuevoUsuario.getNombre());
+            pstmt.setString(2, nuevoUsuario.getApellidos());
+            pstmt.setString(3, nuevoUsuario.getEmail());
+            pstmt.setString(4, nuevoUsuario.getPassword());
+
+            // Ejecuta la consulta en la bd
+            int filasAfectadas = pstmt.executeUpdate();
+            // Si filasAfectadas es mayor que 0 es que inserto bien
+            return filasAfectadas > 0;
+        } catch (SQLException e) {
+            System.out.println("Error al intentar registrar el usuario en BD:" + e.getMessage());
+            return false;
+        }
+    }
+
+    // Metodo de inicio de sesion
+    public Usuario iniciarSesion(String email, String password) {
+        String sql = "SELECT * FROM usuarios WHERE email = ? AND password = ?";
+
+        try {
+            Connection con = ConexionBD.getConexion();
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, email);
+            pstmt.setString(2, password);
+            // Ejecuta la consulta con executeQuery, ya que esperamos recibir datos, no
+            // enviar ni insertarlos
+            java.sql.ResultSet rs = pstmt.executeQuery();
+            // Si rs.next() es true, es que ha encontrado al menos una fila que coincida
+            if (rs.next()) {
+                // Hacemos uso del constructor completo para resucitar al usuario
+                return new Usuario(
+                        rs.getInt("id"),
+                        rs.getString("nombre"),
+                        rs.getString("apellidos"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getInt("rol"));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al intentar iniciar sesión: " + e.getMessage());
+        }
+
+        // Si no lo encuentra o hay un error, devuelve un null
+        return null;
+    }
+}
