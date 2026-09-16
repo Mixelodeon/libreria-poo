@@ -36,6 +36,11 @@ public class Libro {
         this.portadaURL = portadaURL;
     }
 
+    // Constructor vacio
+    public Libro() {
+
+    }
+
     // GETERS Y SETERS
 
     public int getId() {

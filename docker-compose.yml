@@ -5,12 +5,13 @@ services:
     image: mysql:8.0
     container_name: mikel_db
     environment:
-      MYSQL_ROOT_PASSWORD: root # Contraseña sencilla
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: libreria_poo
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   # --- AQUÍ ESTÁ LA MAGIA PARA EL NAVEGADOR ---
   phpmyadmin:

@@ -16,22 +16,30 @@ public class ConexionBD {
 
     // Método estático para obtener la conexión
     public static Connection getConexion() {
-        if (conexion == null) {
-            try {
-                // Paso 1: "Cargar" el driver de MySQL (el traductor)
+        try {
+            // Comprobamos también si está cerrada (.isClosed()).
+            // Solucion de problemas con el f5 y libros
+            if (conexion == null || conexion.isClosed()) {
+                // Carga el driver de MYSQL
                 Class.forName("com.mysql.cj.jdbc.Driver");
-
-                // Paso 2: Intentar abrir la puerta
                 conexion = DriverManager.getConnection(URL, USER, PASSWORD);
                 System.out.println("¡Conexión exitosa a la base de datos libreria_poo en Docker!");
-
-            } catch (ClassNotFoundException e) {
-                System.out.println("Error: No se ha encontrado el driver de MySQL (¿Falta el .jar?)");
-                e.printStackTrace();
-            } catch (SQLException e) {
-                System.out.println("Error: No se pudo conectar a la base de datos.");
-                e.printStackTrace();
             }
+
+            // // Paso 1: "Cargar" el driver de MySQL (el traductor)
+            // Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // // Paso 2: Intentar abrir la puerta
+            // conexion = DriverManager.getConnection(URL, USER, PASSWORD);
+            // System.out.println("¡Conexión exitosa a la base de datos libreria_poo en
+            // Docker!");
+
+        } catch (ClassNotFoundException e) {
+            System.out.println("Error: No se ha encontrado el driver de MySQL (¿Falta el .jar?)");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("Error: No se pudo conectar a la base de datos.");
+            e.printStackTrace();
         }
         return conexion;
     }
@@ -41,6 +49,7 @@ public class ConexionBD {
         if (conexion != null) {
             try {
                 conexion.close();
+
                 conexion = null;
                 System.out.println("Conexión cerrada.");
             } catch (SQLException e) {

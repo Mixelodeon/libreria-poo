@@ -2,7 +2,10 @@ package PO_Objetos.Libreria.back;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LibroDAO {
     // Constructor vscio
@@ -32,5 +35,38 @@ public class LibroDAO {
             System.out.println("Error al insertar el libro en la BD: " + e.getMessage());
             return false;
         }
+    }
+
+    // Metodo que obtiene todos los libros de la bd y los mete en un array
+    public List<Libro> obtenerTodosLosLibros() {
+        List<Libro> listaLibros = new ArrayList<>();
+        String sql = "Select * FROM libros";
+
+        try (Connection conn = ConexionBD.getConexion();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                ResultSet resultados = pstmt.executeQuery()) {
+            // Mientras haya filas en el resultado de la bd
+            while (resultados.next()) {
+                // Se hace uso del cosntructor vacio, para ir metiendo datos de la bd en el
+                // objeto
+                Libro libro = new Libro();
+
+                // Rellenamos el objeto leyendo las columnas exactas de MySQL
+                libro.setTitulo(resultados.getString("titulo"));
+                libro.setAutor(resultados.getString("autor"));
+                libro.setPrecio(resultados.getDouble("precio"));
+                libro.setCategoria(resultados.getString("categoria"));
+                libro.setEditorial(resultados.getString("editorial"));
+                libro.setNumPaginas(resultados.getInt("numPaginas"));
+                libro.setPortadaURL(resultados.getString("portada_url"));
+
+                // Metemos el libro terminado en nuestra lista
+                listaLibros.add(libro);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener el catálogo: " + e.getMessage());
+        }
+        // Devuelve la lista llena (o vacía si ha habido un error o no hay libros)
+        return listaLibros;
     }
 }

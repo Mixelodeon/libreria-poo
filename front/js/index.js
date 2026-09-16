@@ -42,4 +42,52 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.reload();
         })
     }
+
+    // Carga los libros de la bd
+    function cargarLibros() {
+        // Peticion GET
+        fetch('http://localhost:8081/api/libros')
+            .then(respuesta => {
+                if (!respuesta.ok) {
+                    throw new Error("Error al obtener los libros del servidor.");
+                }
+                // Convierte el JSON de java en un array
+                return respuesta.json()
+            })
+            .then(libros => {
+                const contenedor = document.getElementById('contenedor-destacados');
+                // Limpia por si acaso
+                contenedor.innerHTML = '';
+                // Si no se dispone de libros en la bd se muestra un mensaje
+                if (libros.length === 0) {
+                    contenedor.innerHTML = '<p>No hay libros disponibles en este momento.</p>';
+                    return;
+                }
+
+                // Recorre cada libro y crea su respectiva tarjeta html
+                libros.forEach(libro => {
+                    const tarjeta = document.createElement('div');
+                    tarjeta.className = 'tarjeta-libro';
+                    // Une la carpeta ./img/ con el nombre que viene de la bd
+                    const rutaImagen = `./img/${libro.portadaURL}`;
+                    tarjeta.innerHTML = `
+                        <div class="contenedor-portada" style="text-align: center; margin-bottom: 15px;">
+                            <img src="${rutaImagen}" alt="Portada de ${libro.titulo}" style="max-width: 100%; height: 250px; object-fit: cover; border-radius: 8px;">
+                        </div>
+                        <h3 class="titulo">${libro.titulo}</h3>
+                        <p class="autor">${libro.autor}</p>
+                        <p class="precio">${libro.precio.toFixed(2)} €</p>
+                        <button class="btn-agregar"><i class="fas fa-cart-plus"></i> Añadir</button>
+                    `;
+                    contenedor.appendChild(tarjeta);
+                })
+            })
+            .catch((error => {
+                console.error("Error cargando el catalogo: ", error);
+                const contenedor = document.getElementById('contenedor-destacados');
+                contenedor.innerHTML = '<p style="color: red;">Error al cargar el catálogo. Comprueba que el servidor está encendido.</p>';
+            }))
+    }
+    // Llamamos a la funcion de cargar los libros nada mas se carga la pagina
+    cargarLibros();
 })

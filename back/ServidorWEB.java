@@ -19,13 +19,15 @@ public class ServidorWEB {
         server.createContext("/api/registro", new RegistroHandLer());
         // Puerta: /api/login
         server.createContext("/api/login", new LoginHandler());
+        // Puerta: /api/liberos
+        server.createContext("/api/libros", new LibroHandler());
         // Enciende el servidor para que escuche infinitamente
         server.setExecutor(null);
         server.start();
         System.out.println("¡El servidor web esta encendido y escuchando en el puerto 8081!");
     }
 
-    // Manejador del login
+    // Manejador del login: Traductor manual de JSON a mano mediante metodos.
     static class LoginHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
