@@ -1,15 +1,16 @@
-CREATE TABLE usuarios (
+CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(20) NOT NULL,
     apellidos VARCHAR(30) NOT NULL,
     email VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    rol TINYINT DEFAULT 1 NOT NULL -- 1 = cliente, 0 = admin
 );
 
-ALTER TABLE usuarios 
-ADD COLUMN rol TINYINT DEFAULT 1 NOT NULL; -- 1 = cliente, 0 = admin
+-- Se crea el usuario de administrador
+INSERT IGNORE INTO usuarios (nombre, apellidos, email, password, rol) VALUES ("Mikel", "Ruiz", "adminMikel@admin.com", "1234", 0);
 
-CREATE TABLE libros (
+CREATE TABLE IF NOT EXISTS libros (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(100) NOT NULL,
     autor VARCHAR(50) NOT NULL,
@@ -17,10 +18,11 @@ CREATE TABLE libros (
     categoria VARCHAR(25) NOT NULL,
     editorial VARCHAR(25) NOT NULL,
     numPaginas INT(4) NOT NULL,
-    portada_url VARCHAR(40) DEFAULT 'placeholder.jpg'
+    portada_url VARCHAR(40) DEFAULT 'placeholder.jpg',
+    destacado BOOLEAN DEFAULT false
 );
 
-CREATE TABLE carrito (
+CREATE TABLE IF NOT EXISTS carrito (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     id_libro INT NOT NULL,
@@ -30,7 +32,7 @@ CREATE TABLE carrito (
     FOREIGN KEY (id_libro) REFERENCES libros(id) ON DELETE CASCADE
 );
 
-CREATE TABLE lista_deseos (
+CREATE TABLE IF NOT EXISTS lista_deseos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     id_libro INT NOT NULL,

@@ -1,12 +1,9 @@
-/* Layout General del Admin */
 .admin-body {
     display: flex;
     min-height: 100vh;
     background-color: #f1f5f9;
-    /* Un fondo un poco más gris para el panel */
 }
 
-/* --- SIDEBAR LATERAL --- */
 .sidebar {
     width: 260px;
     background-color: var(--texto-oscuro);
@@ -27,7 +24,6 @@
 .sidebar-menu {
     list-style: none;
     flex-grow: 1;
-    /* Empuja el menú de abajo hacia el final */
 }
 
 .sidebar-menu li a {
@@ -68,10 +64,8 @@
     color: var(--blanco-puro);
 }
 
-/* --- CONTENIDO PRINCIPAL --- */
 .admin-content {
     margin-left: 260px;
-    /* Deja espacio para la sidebar fija */
     flex-grow: 1;
     padding: 40px;
 }
@@ -94,7 +88,7 @@
     font-weight: bold;
 }
 
-/* --- FORMULARIO --- */
+
 .admin-panel {
     background: var(--blanco-puro);
     padding: 30px;
@@ -114,7 +108,6 @@
     gap: 20px;
 }
 
-/* Sobrescribimos el grid a 3 columnas si hay 3 elementos */
 .formulario-admin .form-row:has(> :nth-child(3)) {
     grid-template-columns: 1fr 1fr 1fr;
 }
@@ -138,4 +131,93 @@
 .formulario-admin input:focus,
 .formulario-admin select:focus {
     border-color: var(--verde-principal);
+}
+
+
+.table-container {
+    overflow-x: auto;
+    background: var(--blanco-puro);
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+}
+
+.admin-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+.admin-tabla th,
+.admin-tabla td {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-tabla th {
+    background-color: #f8fafc;
+    color: var(--texto-oscuro);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+.admin-tabla tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.admin-tabla tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    text-align: center;
+    min-width: 70px;
+}
+
+.badge-admin {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.badge-usuario {
+    background-color: #e2e8f0;
+    color: #475569;
+}
+
+.acciones-td {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-icono {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    color: var(--blanco-puro);
+    transition: transform 0.2s, opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.btn-icono:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.btn-editar {
+    background-color: #3b82f6;
+}
+
+.btn-eliminar {
+    background-color: #ef4444;
 }

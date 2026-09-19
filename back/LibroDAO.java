@@ -15,7 +15,7 @@ public class LibroDAO {
 
     // Metodo para guardar un libro en la BD
     public boolean insertarLibro(Libro libro) {
-        String sql = "INSERT INTO libros (titulo, autor, precio, categoria, editorial, numPaginas, portada_url) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO libros (titulo, autor, precio, categoria, editorial, numPaginas, portada_url, destacado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         // Cierra la conexion al terminar
         try (Connection conn = ConexionBD.getConexion();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -27,6 +27,7 @@ public class LibroDAO {
             pstmt.setString(5, libro.getEditorial());
             pstmt.setInt(6, libro.getNumPaginas());
             pstmt.setString(7, libro.getPortadaURL());
+            pstmt.setBoolean(8, libro.getDestacado());
             // Ejecuta la sql
             int filasAfectadas = pstmt.executeUpdate();
             // Devuelve true si la consulta se ejecuta con exito
@@ -59,6 +60,7 @@ public class LibroDAO {
                 libro.setEditorial(resultados.getString("editorial"));
                 libro.setNumPaginas(resultados.getInt("numPaginas"));
                 libro.setPortadaURL(resultados.getString("portada_url"));
+                libro.setDestacado(resultados.getBoolean("destacado"));
 
                 // Metemos el libro terminado en nuestra lista
                 listaLibros.add(libro);
@@ -69,4 +71,39 @@ public class LibroDAO {
         // Devuelve la lista llena (o vacía si ha habido un error o no hay libros)
         return listaLibros;
     }
+
+    // Metodo para obtener los libros destacados de la tienda
+    public List<Libro> obtenerLibrosDestacados() {
+        List<Libro> listaLibros = new ArrayList<>();
+        String sql = "Select * FROM libros WHERE destacado = true";
+
+        try (Connection conn = ConexionBD.getConexion();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                ResultSet resultados = pstmt.executeQuery()) {
+            // Mientras haya filas en el resultado de la bd
+            while (resultados.next()) {
+                // Se hace uso del cosntructor vacio, para ir metiendo datos de la bd en el
+                // objeto
+                Libro libro = new Libro();
+
+                // Rellenamos el objeto leyendo las columnas exactas de MySQL
+                libro.setTitulo(resultados.getString("titulo"));
+                libro.setAutor(resultados.getString("autor"));
+                libro.setPrecio(resultados.getDouble("precio"));
+                libro.setCategoria(resultados.getString("categoria"));
+                libro.setEditorial(resultados.getString("editorial"));
+                libro.setNumPaginas(resultados.getInt("numPaginas"));
+                libro.setPortadaURL(resultados.getString("portada_url"));
+                libro.setDestacado(resultados.getBoolean("destacado"));
+
+                // Metemos el libro terminado en nuestra lista
+                listaLibros.add(libro);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener el catálogo: " + e.getMessage());
+        }
+        // Devuelve la lista llena (o vacía si ha habido un error o no hay libros)
+        return listaLibros;
+    }
+
 }

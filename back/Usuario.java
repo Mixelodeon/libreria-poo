@@ -29,10 +29,19 @@ public class Usuario {
         this.password = password;
     }
 
+    // Constructor 3 para que el administrador pueda editar usuarios (vacio)
+    public Usuario() {
+
+    }
+
     // Metodos getters y setters
 
     public int getID() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNombre() {

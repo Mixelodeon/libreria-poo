@@ -62,4 +62,29 @@ public class UsuarioDAO {
         // Si no lo encuentra o hay un error, devuelve un null
         return null;
     }
+
+    // Metodo para obtener todos los usuarios registrados en la bd
+    public java.util.List<Usuario> ObtenerTodosLosUsuarios() {
+        java.util.List<Usuario> listaUsuarios = new java.util.ArrayList<>();
+        String sql = "SELECT id, nombre, apellidos, email, rol FROM usuarios";
+
+        try {
+            Connection con = ConexionBD.getConexion();
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            java.sql.ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Usuario user = new Usuario();
+                user.setId(rs.getInt("id"));
+                user.setNombre(rs.getString("nombre"));
+                user.setApellidos(rs.getString("apellidos"));
+                user.setEmail(rs.getString("email"));
+                user.setRol(rs.getInt("rol"));
+                listaUsuarios.add(user);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener la lista de usuarios: " + e.getMessage());
+        }
+        return listaUsuarios;
+    }
 }

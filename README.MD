@@ -1,0 +1,1 @@
+De la carpeta lib de este proyecto, hay que añadir los .jar al IDE. Estos se añaden en "Java Proyects" y "Referenced Libraries".

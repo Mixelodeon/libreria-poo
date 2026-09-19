@@ -1,7 +1,7 @@
 package PO_Objetos.Libreria.back;
 
 // Importa la herramiente la cual permite mantener comunicación abierta con MySQL
-import java.sql.Connection;
+// import java.sql.Connection;
 
 // Clase para probar el funcionamiento de la conexión con la base de datos funciona
 public class Main {
@@ -45,16 +45,17 @@ public class Main {
 
         // Simulamos la inserccion de un libro en la bd, mediante el uso de la clase
         // LibroDAO
-        LibroDAO dao = new LibroDAO();
+        // LibroDAO dao = new LibroDAO();
         // Llamamamos al constructor del libro sin el ID
-        Libro libroPrueba = new Libro("Alas de ónix", "Rebecca Yarros", 23.90, "Fantasía", "Planeta", 896,
-                "onix_portada.jpg");
-        boolean exito = dao.insertarLibro(libroPrueba);
-        if (exito) {
-            System.out.println("Libro guardado correctamente en la BD");
-        } else {
-            System.out.println("Hubo un fallo al guardar el libro");
-        }
+        // Libro libroPrueba = new Libro("Alas de ónix", "Rebecca Yarros", 23.90,
+        // "Fantasía", "Planeta", 896,
+        // "onix_portada.jpg");
+        // boolean exito = dao.insertarLibro(libroPrueba);
+        // if (exito) {
+        // System.out.println("Libro guardado correctamente en la BD");
+        // } else {
+        // System.out.println("Hubo un fallo al guardar el libro");
+        // }
 
     }
 }

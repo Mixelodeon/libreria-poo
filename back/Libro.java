@@ -10,10 +10,11 @@ public class Libro {
     private double precio;
     private int numPaginas;
     private String portadaURL;
+    private boolean destacado;
 
     // Constructor total del objeto
     public Libro(int id, String titulo, String autor, double precio, String categoria, String editorial, int numPaginas,
-            String portadaURL) {
+            String portadaURL, boolean destacado) {
         this.id = id;
         this.titulo = titulo;
         this.autor = autor;
@@ -22,11 +23,12 @@ public class Libro {
         this.editorial = editorial;
         this.numPaginas = numPaginas;
         this.portadaURL = portadaURL;
+        this.destacado = destacado;
     }
 
     // Constructor sin el ID para usar en consultas SQL
     public Libro(String titulo, String autor, double precio, String categoria, String editorial, int numPaginas,
-            String portadaURL) {
+            String portadaURL, boolean destacado) {
         this.titulo = titulo;
         this.autor = autor;
         this.precio = precio;
@@ -34,6 +36,7 @@ public class Libro {
         this.editorial = editorial;
         this.numPaginas = numPaginas;
         this.portadaURL = portadaURL;
+        this.destacado = destacado;
     }
 
     // Constructor vacio
@@ -101,5 +104,13 @@ public class Libro {
 
     public void setPortadaURL(String portadaURL) {
         this.portadaURL = portadaURL;
+    }
+
+    public boolean getDestacado() {
+        return destacado;
+    }
+
+    public void setDestacado(boolean destacado) {
+        this.destacado = destacado;
     }
 }
