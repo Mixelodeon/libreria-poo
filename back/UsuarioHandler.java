@@ -43,8 +43,69 @@ public class UsuarioHandler implements HttpHandler {
                 } catch (Exception ex) {
                 }
             }
+        } else if (exchange.getRequestMethod().equalsIgnoreCase("PUT")) {
+            try {
+                // Lee el JSON
+                java.io.InputStream is = exchange.getRequestBody();
+                String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                // JSON a objeto Java
+                Gson gson = new Gson();
+                Usuario usuarioEditado = gson.fromJson(body, Usuario.class);
+                // Llamada a DAO para actualizar
+                UsuarioDAO dao = new UsuarioDAO();
+                boolean exito = dao.actualizarUsuario(usuarioEditado);
+                if (exito) {
+                    String respuesta = "{\"mensaje\": \"Usuario actualizado correctamente\"}";
+                    exchange.sendResponseHeaders(200, respuesta.getBytes(StandardCharsets.UTF_8).length);
+                    OutputStream os = exchange.getResponseBody();
+                    os.write(respuesta.getBytes(StandardCharsets.UTF_8));
+                    os.close();
+                } else {
+                    // 500 = Error interno del servidor
+                    exchange.sendResponseHeaders(500, -1);
+                    exchange.close();
+                }
+            } catch (Exception e) {
+                System.out.println("Error en UsuarioHandler PUT: " + e.getMessage());
+                e.printStackTrace();
+                exchange.sendResponseHeaders(400, -1);
+                exchange.close();
+            }
+        } else if (exchange.getRequestMethod().equalsIgnoreCase("DELETE")) {
+            try {
+                // Captura el parametro de la URL
+                String query = exchange.getRequestURI().getQuery();
+                if (query != null && query.startsWith("id=")) {
+                    // Extrael el numero cortando el string por "="
+                    int idAEliminar = Integer.parseInt(query.split("=")[1]);
+
+                    UsuarioDAO dao = new UsuarioDAO();
+                    boolean exito = dao.eliminarUsuario(idAEliminar);
+
+                    if (exito) {
+                        String respuesta = "{\"mensaje\": \"Usuario eliminado\"}";
+                        exchange.sendResponseHeaders(200, respuesta.getBytes(StandardCharsets.UTF_8).length);
+                        OutputStream os = exchange.getResponseBody();
+                        os.write(respuesta.getBytes(StandardCharsets.UTF_8));
+                        os.close();
+                    } else {
+                        // Si no lo encuentra, devolvemos un 404 (Not Found)
+                        exchange.sendResponseHeaders(404, -1);
+                        exchange.close();
+                    }
+                } else {
+                    // Si mandan mal la URL, devolvemos un 400 (Bad Request)
+                    exchange.sendResponseHeaders(400, -1);
+                    exchange.close();
+                }
+
+            } catch (Exception e) {
+                System.out.println("Error en UsuarioHandler DELETE: " + e.getMessage());
+                exchange.sendResponseHeaders(500, -1);
+                exchange.close();
+            }
         } else {
-            // Método no permitido
+            // Método no permitido para cualquier otra petición
             exchange.sendResponseHeaders(405, -1);
             exchange.close();
         }

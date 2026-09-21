@@ -120,6 +120,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     btnEditar.addEventListener('click', () => {
                         prepararEdicion(usuario);
                     })
+                    const btnEliminarUsuario = tr.querySelector('.btn-eliminar');
+                    // Se llama a la funcion externa de eliminar usuario
+                    btnEliminarUsuario.addEventListener('click', () => {
+                        eliminarUsuario(usuario.id, usuario.nombre);
+                    })
                     tbody.appendChild(tr);
                 })
             }).catch(error => {
@@ -144,6 +149,80 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('edit-apellidos').value = usuario.apellidos;
         document.getElementById('edit-email').value = usuario.email;
         document.getElementById('edit-rol').value = usuario.rol;
+    }
+
+    // Logica para enviar formulario con los cambios del usuario
+    const formEditarUsuario = document.getElementById('form-editar-usuario');
+    if (formEditarUsuario) {
+        formEditarUsuario.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Recoleta los datos, convirtiendo a numeros el id y el Rol
+            const usuarioEditado = {
+                id: parseInt(document.getElementById('edit-id').value),
+                nombre: document.getElementById('edit-nombre').value,
+                apellidos: document.getElementById('edit-apellidos').value,
+                email: document.getElementById('edit-email').value,
+                rol: parseInt(document.getElementById('edit-rol').value)
+            };
+            // Envia con metodo PUT
+            fetch('http://localhost:8081/api/usuarios', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(usuarioEditado)
+            })
+                .then(respuesta => {
+                    if (respuesta.ok) {
+                        alert("¡Usuario actualizado con éxito!");
+
+                        // 1. Ocultar formulario y mostrar tabla
+                        document.getElementById('panel-editar-usuario').style.display = 'none';
+                        document.getElementById('contenedor-tabla-usuarios').style.display = 'block';
+
+                        // 2. Refrescar la tabla mágicamente para ver los cambios al instante
+                        cargarUsuarios();
+                    } else {
+                        alert("Error al guardar los cambios en la base de datos.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error de conexión:", error);
+                    alert("El servidor no responde.");
+                });
+        })
+    }
+
+    // Logica del boton cancelar para volver a la tabla sin guardar
+    const cancelarEdicion = document.getElementById('btn-cancelar-edicion');
+    cancelarEdicion.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('panel-editar-usuario').style.display = 'none';
+        document.getElementById('contenedor-tabla-usuarios').style.display = 'block';
+    })
+
+    // Funcion eliminar usuario
+    function eliminarUsuario(idUsuario, nombreUsuario) {
+        const confirmar = confirm(`¿Estás seguro que deseas eliminar ${nombreUsuario} de la Base De Datos?`)
+        if (confirmar) {
+            // Mandamos la orden con el id mediante la URL
+            fetch(`http://localhost:8081/api/usuarios?id=${idUsuario}`, {
+                method: 'DELETE'
+            })
+                .then(respuesta => {
+                    if (respuesta.ok) {
+                        alert("Usuario eliminado correctamente.");
+                        // Recarga la tabla para que desaparezca visualmente
+                        cargarUsuarios();
+                    } else {
+                        alert("Hubo un error y no se pudo eliminar el usuario.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al eliminar:", error);
+                    alert("El servidor no responde.");
+                });
+        }
     }
 
     cargarUsuarios();
