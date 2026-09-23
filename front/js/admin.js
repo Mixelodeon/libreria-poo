@@ -47,11 +47,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formNuevoLibro) {
         formNuevoLibro.addEventListener('submit', (e) => {
             e.preventDefault();
+            // Busca los checkbox que el usuario haya seleccionado
+            const checkboxMarcados = document.querySelectorAll('input[name="categoriaCheckbox"]:checked');
+            // Extraemos el valor de cada uno y lo convertimos en numero entero
+            const categoriasSeleccionadas = Array.from(checkboxMarcados).map(checkbox => parseInt(checkbox.value));
+            // Validacion rapida para que no mande un libro sin categoria
+            if (categoriasSeleccionadas.length === 0) {
+                alert("Por favor, selecione una categoría.")
+                return;
+            }
             const nuevoLibro = {
                 titulo: document.getElementById('titulo').value,
                 autor: document.getElementById('autor').value,
                 precio: parseFloat(document.getElementById('precio').value),
-                categoria: document.getElementById('categoria').value,
+                categoriasIds: categoriasSeleccionadas,
                 editorial: document.getElementById('editorial').value,
                 numPaginas: parseInt(document.getElementById('numPaginas').value),
                 portadaURL: document.getElementById('portadaURL').value,
@@ -133,6 +142,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Error al cargar los usuarios. Comprueba el servidor.</td></tr>';
             });
     }
+
+    // Funcion que consulta las categorias de los libros y las muestra en el html
+    function cargarCategorias() {
+        fetch('http://localhost:8081/api/categorias')
+            .then(respuesta => {
+                if (!respuesta.ok) throw new Error("Error al obtener las categorías.");
+                return respuesta.json();
+            })
+            .then(categorias => {
+                const contenedor = document.getElementById('grupo-categorias');
+                contenedor.innerHTML = '';
+                // Crea un checkbox por cada categoria que tenga en la bd 
+                categorias.forEach(categoria => {
+                    const label = document.createElement('label');
+                    label.innerHTML = `<input type="checkbox" name="categoriaCheckbox" value="${categoria.id}"> ${categoria.nombre}`;
+                    contenedor.appendChild(label);
+                })
+            }).catch(error => {
+                console.error("Error al cargar categorías:", error);
+                document.getElementById('grupo-categorias').innerHTML = '<span style="color: red;">Error al cargar las categorías.</span>';
+            });
+    }
+
+    cargarCategorias();
 
     // Funcion para el formulario de editar usuario
     function prepararEdicion(usuario) {

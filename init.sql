@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS libreria_bd;
+USE libreria_bd;
+
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(20) NOT NULL,
@@ -8,25 +11,41 @@ CREATE TABLE IF NOT EXISTS usuarios (
 );
 
 -- Se crea el usuario de administrador
-INSERT IGNORE INTO usuarios (nombre, apellidos, email, password, rol) VALUES ("Mikel", "Ruiz", "adminMikel@admin.com", "1234", 0);
+INSERT IGNORE INTO usuarios (nombre, apellidos, email, password, rol) VALUES ("Mikel", "Ruiz Moreno", "adminMikel@admin.com", "1234", 0);
 
 CREATE TABLE IF NOT EXISTS libros (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(100) NOT NULL,
     autor VARCHAR(50) NOT NULL,
     precio DECIMAL(10,2) NOT NULL,
-    categoria VARCHAR(25) NOT NULL,
     editorial VARCHAR(25) NOT NULL,
     numPaginas INT(4) NOT NULL,
     portada_url VARCHAR(40) DEFAULT 'placeholder.jpg',
     destacado BOOLEAN DEFAULT false
 );
+CREATE TABLE IF NOT EXISTS categorias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL
+);
 
+-- Insertamos ya algunas categorías para hacer pruebas
+INSERT IGNORE INTO categorias (nombre) VALUES ('Fantasía'), ('Drama'), ('Aventura'), ('Romance'), ('Terror');
+
+-- Creamos la tabla puente generada por el rombo Pertenece
+CREATE TABLE IF NOT EXISTS libros_categorias (
+    libro_id INT,
+    categoria_id INT,
+    -- La clave primaria compuesta evita que asignes "Fantasía" dos veces al mismo libro
+    PRIMARY KEY (libro_id, categoria_id),
+    FOREIGN KEY (libro_id) REFERENCES libros(id) ON DELETE CASCADE,
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE CASCADE
+);
+ 
 CREATE TABLE IF NOT EXISTS carrito (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     id_libro INT NOT NULL,
-    cantidad INT NOT NULL DEFAULT 1, -- Tu atributo "Cantidad" (circulito)
+    cantidad INT NOT NULL DEFAULT 1,
     -- Definición de las Foreign Keys para enlazar
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE,
     FOREIGN KEY (id_libro) REFERENCES libros(id) ON DELETE CASCADE

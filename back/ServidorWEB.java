@@ -23,6 +23,8 @@ public class ServidorWEB {
         server.createContext("/api/libros", new LibroHandler());
         // Puerta: /api/usuarios
         server.createContext("/api/usuarios", new UsuarioHandler());
+        // Puerta: /api/categorias
+        server.createContext("/api/categorias", new CategoriaHandler());
         // Enciende el servidor para que escuche infinitamente
         server.setExecutor(null);
         server.start();

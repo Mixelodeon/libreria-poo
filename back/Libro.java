@@ -1,11 +1,14 @@
 package PO_Objetos.Libreria.back;
 
+import java.util.List;
+
 public class Libro {
     // Atributos: Al identico que en la base de datos
     private int id;
     private String titulo;
     private String autor;
-    private String categoria;
+    private List<Integer> categoriasIds;
+    private List<String> categoriasNombres;
     private String editorial;
     private double precio;
     private int numPaginas;
@@ -13,13 +16,15 @@ public class Libro {
     private boolean destacado;
 
     // Constructor total del objeto
-    public Libro(int id, String titulo, String autor, double precio, String categoria, String editorial, int numPaginas,
+    public Libro(int id, String titulo, String autor, double precio, List<Integer> categoriasIds,
+            List<String> categoriasNombres, String editorial, int numPaginas,
             String portadaURL, boolean destacado) {
         this.id = id;
         this.titulo = titulo;
         this.autor = autor;
         this.precio = precio;
-        this.categoria = categoria;
+        this.categoriasIds = categoriasIds;
+        this.categoriasNombres = categoriasNombres;
         this.editorial = editorial;
         this.numPaginas = numPaginas;
         this.portadaURL = portadaURL;
@@ -27,12 +32,13 @@ public class Libro {
     }
 
     // Constructor sin el ID para usar en consultas SQL
-    public Libro(String titulo, String autor, double precio, String categoria, String editorial, int numPaginas,
-            String portadaURL, boolean destacado) {
+    public Libro(String titulo, String autor, double precio, List<Integer> categoriasIds,
+            List<String> categoriasNombres, String editorial, int numPaginas, String portadaURL, boolean destacado) {
         this.titulo = titulo;
         this.autor = autor;
         this.precio = precio;
-        this.categoria = categoria;
+        this.categoriasIds = categoriasIds;
+        this.categoriasNombres = categoriasNombres;
         this.editorial = editorial;
         this.numPaginas = numPaginas;
         this.portadaURL = portadaURL;
@@ -45,6 +51,9 @@ public class Libro {
     }
 
     // GETERS Y SETERS
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getId() {
         return id;
@@ -66,12 +75,20 @@ public class Libro {
         this.autor = autor;
     }
 
-    public String getCategoria() {
-        return categoria;
+    public List<Integer> getCategoriasIds() {
+        return categoriasIds;
     }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
+    public void setCategoriasIds(List<Integer> categoriasIds) {
+        this.categoriasIds = categoriasIds;
+    }
+
+    public List<String> getCategoriasNombres() {
+        return categoriasNombres;
+    }
+
+    public void setCategoriasNombres(List<String> categoriasNombres) {
+        this.categoriasNombres = categoriasNombres;
     }
 
     public String getEditorial() {
@@ -106,7 +123,7 @@ public class Libro {
         this.portadaURL = portadaURL;
     }
 
-    public boolean getDestacado() {
+    public boolean isDestacado() {
         return destacado;
     }
 

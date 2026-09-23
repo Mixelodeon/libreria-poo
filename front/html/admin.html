@@ -80,24 +80,19 @@
                         <input type="number" id="precio" step="0.01" required>
                     </div>
                     <div class="form-grupo">
-                        <label for="categoria">Categoría</label>
-                        <select id="categoria" required>
-                            <option value="Fantasía">Fantasía</option>
-                            <option value="Terror y Suspense">Terror y Suspense</option>
-                            <option value="Ciencia Ficción">Ciencia Ficción</option>
-                            <option value="Drama">Drama</option>
-                            <option value="Programación">Programación</option>
-                        </select>
-                    </div>
-                    <div class="form-grupo">
                         <label for="numPaginas">Nº Páginas</label>
                         <input type="number" id="numPaginas" required>
                     </div>
                 </div>
-
                 <div class="form-grupo">
                     <label for="portadaURL">Nombre del archivo de Portada</label>
                     <input type="text" id="portadaURL" required placeholder="Ej: portada.jpg">
+                </div>
+                <div class="form-grupo">
+                    <label for="categoria">Categorías:</label>
+                    <div id="grupo-categorias" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px;">
+
+                    </div>
                 </div>
 
                 <div class="form-grupo" style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">

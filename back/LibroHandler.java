@@ -42,6 +42,7 @@ public class LibroHandler implements HttpHandler {
                 // Convierte el texto JSON al objeto Libro usando GSON
                 Gson gson = new Gson();
                 Libro nuevoLibro = gson.fromJson(body, Libro.class);
+                System.out.println("IDs de categorías detectados por Java: " + nuevoLibro.getCategoriasIds());
                 // Llama a la clase LibroDAO
                 LibroDAO dao = new LibroDAO();
                 boolean exito = dao.insertarLibro(nuevoLibro);
