@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const panelLibros = document.getElementById('panel-libros');
     const panelUsuarios = document.getElementById('panel-usuarios');
     const tituloSeccion = document.getElementById('titulo-seccion');
+    const contenedorTablaLibros = document.getElementById('contenedor-tabla-libros');
+    const panelNuevoLibro = document.getElementById('panel-nuevo-libro');
+    const panelEditarLibro = document.getElementById('panel-editar-libro');
 
     // Logica de la navegacion por el menu de la interfaz
     navLibros.addEventListener('click', (e) => {
@@ -42,6 +45,29 @@ document.addEventListener('DOMContentLoaded', () => {
         navLibros.classList.remove('activo');
         navUsuarios.classList.add('activo');
     })
+
+    // Control del panel añadir/editar/borrar libros
+    // Boton abrir form de añadir libro
+    document.getElementById('btn-mostrar-nuevo-libro').addEventListener('click', () => {
+        contenedorTablaLibros.style.display = 'none';
+        panelNuevoLibro.style.display = 'block';
+        tituloSeccion.textContent = "Añadir Nuevo Libro";
+    })
+    // Boton cancelar añadir libro y volver a la tabla
+    document.getElementById('btn-cancelar-nuevo-libro').addEventListener('click', (e) => {
+        e.preventDefault();
+        panelNuevoLibro.style.display = 'none';
+        contenedorTablaLibros.style.display = 'block';
+        tituloSeccion.textContent = "Gestion de libros";
+    })
+    // Boton cancelar edicion de libro y volver a la tabla
+    document.getElementById('btn-cancelar-edicion-libro').addEventListener('click', (e) => {
+        e.preventDefault();
+        panelEditarLibro.style.display = 'none';
+        contenedorTablaLibros.style.display = 'block';
+        tituloSeccion.textContent = "Gestión de Libros";
+    });
+
 
     const formNuevoLibro = document.getElementById('form-nuevo-libro');
     if (formNuevoLibro) {
@@ -78,6 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (respuesta.ok) {
                         alert("¡Éxito! Libro añadido al catálogo.");
                         formNuevoLibro.reset(); // Limpia los campos del formulario automáticamente
+                        // Ocultar formulario y recargar la tabla
+                        document.getElementById('panel-nuevo-libro').style.display = 'none';
+                        document.getElementById('contenedor-tabla-libros').style.display = 'block';
+                        document.getElementById('titulo-seccion').textContent = "Gestión de Libros";
+                        // Vuelve a pedir los libros a la bd
+                        cargarLibros();
                     } else {
                         alert("Hubo un error al guardar el libro en la base de datos.");
                     }
@@ -133,6 +165,61 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Se llama a la funcion externa de eliminar usuario
                     btnEliminarUsuario.addEventListener('click', () => {
                         eliminarUsuario(usuario.id, usuario.nombre);
+                    })
+                    tbody.appendChild(tr);
+                })
+            }).catch(error => {
+                console.error("Error de conexión:", error);
+                const tbody = document.getElementById('tabla-usuarios-body');
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Error al cargar los usuarios. Comprueba el servidor.</td></tr>';
+            });
+    }
+
+    // Funcion para descargar e imprimir la tabla con los libros
+    function cargarLibros() {
+        fetch('http://localhost:8081/api/libros')
+            .then(respuesta => {
+                if (!respuesta.ok) throw new Error("Error al obtener los libros");
+                return respuesta.json();
+            })
+            .then(libros => {
+                const tbody = document.getElementById('tabla-libros-body');
+                tbody.innerHTML = '';
+
+                if (libros.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No hay libros registrados.</td></tr>';
+                    return;
+                }
+                libros.forEach(libro => {
+                    let nombresCategorias = "Sin categoría";
+                    if (libro.categoriasNombres && libro.categoriasNombres.length > 0) {
+                        nombresCategorias = libro.categoriasNombres.join(', ');
+                    }
+                    // Crea la fila (tr) de la tabla
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${libro.id}</td>
+                        <td><img src="../img/${libro.portadaURL}" alt="${libro.titulo}" style="width: 50px; height: auto; border-radius: 4px;"></td>
+                        <td>${libro.titulo}</td>
+                        <td>${libro.autor}</td>
+                        <td>${libro.precio} €</td>
+                        <td>${nombresCategorias}</td>
+                        <td class="acciones-td">
+                            <button class="btn-icono btn-editar btn-editar-libro" title="Editar"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icono btn-eliminar btn-eliminar-libro" title="Eliminar"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+
+                    const btnEditar = tr.querySelector('.btn-editar-libro');
+                    btnEditar.addEventListener('click', () => {
+                        console.log("Entra en editar libro ID: " + libro.id);
+                        prepararEdicionLibro(libro);
+                    })
+
+                    const btnEliminar = tr.querySelector('.btn-eliminar-libro');
+                    btnEliminar.addEventListener('click', () => {
+                        console.log("Entra en eliminar libro ID: " + libro.id);
+                        eliminarLibro(libro.id, libro.titulo);
                     })
                     tbody.appendChild(tr);
                 })
@@ -258,7 +345,106 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function prepararEdicionLibro(libro) {
+        document.getElementById('contenedor-tabla-libros').style.display = 'none';
+        document.getElementById('panel-editar-libro').style.display = 'block';
+        document.getElementById('titulo-seccion').textContent = "Editar Libro: " + libro.titulo;
+
+        document.getElementById('edit-libro-id').value = libro.id;
+        document.getElementById('edit-titulo').value = libro.titulo;
+        document.getElementById('edit-autor').value = libro.autor;
+        document.getElementById('edit-precio').value = libro.precio;
+        document.getElementById('edit-editorial').value = libro.editorial;
+        document.getElementById('edit-numPaginas').value = libro.numPaginas;
+        document.getElementById('edit-portadaURL').value = libro.portadaURL;
+        document.getElementById('edit-destacado').checked = libro.destacado;
+
+        fetch('http://localhost:8081/api/categorias')
+            .then(res => res.json())
+            .then(categorias => {
+                const contenedor = document.getElementById('edit-grupo-categorias');
+                contenedor.innerHTML = '';
+
+                categorias.forEach(categoria => {
+                    // Comprueba si el libro ya tenía esta categoria  para dejarla marcada
+                    const estaMarcado = libro.categoriasIds.includes(categoria.id) ? 'checked' : '';
+
+                    const label = document.createElement('label');
+                    label.innerHTML = `<input type="checkbox" name="editCategoriaCheckbox" value="${categoria.id}" ${estaMarcado}> ${categoria.nombre}`;
+                    contenedor.appendChild(label);
+                })
+            })
+    }
+
+    // Evento para enviar el form de edicion PUT
+    const formEditarLibro = document.getElementById('form-editar-libro');
+    if (formEditarLibro) {
+        formEditarLibro.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const checkboxMarcados = document.querySelectorAll('input[name="editCategoriaCheckbox"]:checked');
+            const categoriasSeleccionadas = Array.from(checkboxMarcados).map(cb => parseInt(cb.value));
+
+            if (categoriasSeleccionadas.length === 0) {
+                alert("Por favor, seleccione al menos una categoría.")
+                return;
+            }
+            const libroEditado = {
+                id: parseInt(document.getElementById('edit-libro-id').value),
+                titulo: document.getElementById('edit-titulo').value,
+                autor: document.getElementById('edit-autor').value,
+                precio: parseFloat(document.getElementById('edit-precio').value),
+                categoriasIds: categoriasSeleccionadas,
+                editorial: document.getElementById('edit-editorial').value,
+                numPaginas: parseInt(document.getElementById('edit-numPaginas').value),
+                portadaURL: document.getElementById('edit-portadaURL').value,
+                destacado: document.getElementById('edit-destacado').checked
+            };
+
+            fetch('http://localhost:8081/api/libros', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(libroEditado)
+            })
+                .then(respuesta => {
+                    if (respuesta.ok) {
+                        alert("¡Libro actualizado correctamente!");
+                        document.getElementById('panel-editar-libro').style.display = 'none';
+                        document.getElementById('contenedor-tabla-libros').style.display = 'block';
+                        document.getElementById('titulo-seccion').textContent = "Gestión de Libros";
+                        cargarLibros(); // Recarga la tabla para ver los cambios
+                    } else {
+                        alert("Hubo un error al actualizar el libro.");
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        })
+    }
+
+    // Funcion para eliminar libros
+    function eliminarLibro(idLibro, tituloLibro) {
+        const confirmar = confirm(`¿Seguro que desea eliminar "${tituloLibro}"?`)
+        if (confirmar) {
+            fetch(`http://localhost:8081/api/libros?id=${idLibro}`, {
+                method: 'DELETE'
+            })
+                .then(respuesta => {
+                    if (respuesta.ok) {
+                        alert('Libro eliminado con exito.')
+                        // Recargar la tabla para que se vea que a sido eliminado
+                        cargarLibros();
+                    } else {
+                        alert("Hubo un error al eliminar el libro en la base de datos.");
+                    }
+                }).catch(error => {
+                    console.error("Error al eliminar:", error);
+                    alert("El servidor no responde.");
+                });
+        }
+    }
+
+
     cargarUsuarios();
+    cargarLibros();
 
     // Cerrar sesion
     document.getElementById('btn-logout-admin').addEventListener('click', (e) => {

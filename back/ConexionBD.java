@@ -23,7 +23,8 @@ public class ConexionBD {
                 // Carga el driver de MYSQL
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 conexion = DriverManager.getConnection(URL, USER, PASSWORD);
-                System.out.println("¡Conexión exitosa a la base de datos libreria_poo en Docker!");
+                // System.out.println("¡Conexión exitosa a la base de datos libreria_poo en
+                // Docker!");
             }
 
             // // Paso 1: "Cargar" el driver de MySQL (el traductor)

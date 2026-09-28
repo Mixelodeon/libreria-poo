@@ -192,8 +192,13 @@
 }
 
 .acciones-td {
-    display: flex;
-    gap: 10px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.acciones-td .btn-icono {
+    margin-right: 8px;
+    display: inline-flex;
 }
 
 .btn-icono {
@@ -220,4 +225,56 @@
 
 .btn-eliminar {
     background-color: #ef4444;
+}
+
+.tabla-admin {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.tabla-admin th,
+.tabla-admin td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.tabla-admin th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #333;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.1s;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primario {
+    background-color: var(--verde-principal);
+    color: var(--blanco-puro);
+}
+
+.btn-primario:hover {
+    opacity: 0.9;
+}
+
+.btn-secundario {
+    background-color: var(--texto-oscuro);
+    color: var(--blanco-puro);
+}
+
+.btn-secundario:hover {
+    opacity: 0.9;
 }

@@ -214,4 +214,81 @@ public class LibroDAO {
         return listaLibros;
     }
 
+    // Logica de actualizar las categorias: Las categorias que tiene el libro se
+    // guardan, luego se borra todas las categorias que tenga
+    // y se insertan las nuevas categorias seleccionadas, mas las guardadas
+    // anteriores.
+    public boolean actualizarLibro(Libro libro) {
+        // Consultas SQL
+        String sqlLibro = "UPDATE libros SET titulo=?, autor=?, precio=?, editorial=?, numPaginas=?, portada_url=?, destacado=? WHERE id=?";
+        String sqlDeleteCategorias = "DELETE FROM libros_categorias WHERE libro_id=?";
+        String sqlInsertCategoria = "INSERT INTO libros_categorias (libro_id, categoria_id) VALUES (?, ?)";
+
+        Connection conn = null;
+        try {
+            conn = ConexionBD.getConexion();
+            conn.setAutoCommit(false);
+
+            // Actualiza datos basicos del libro
+            try (PreparedStatement pstmtLibro = conn.prepareStatement(sqlLibro)) {
+                pstmtLibro.setString(1, libro.getTitulo());
+                pstmtLibro.setString(2, libro.getAutor());
+                pstmtLibro.setDouble(3, libro.getPrecio());
+                pstmtLibro.setString(4, libro.getEditorial());
+                pstmtLibro.setInt(5, libro.getNumPaginas());
+                pstmtLibro.setString(6, libro.getPortadaURL());
+                pstmtLibro.setBoolean(7, libro.isDestacado());
+                pstmtLibro.setInt(8, libro.getId());
+                pstmtLibro.executeUpdate();
+            }
+            // Borrar las categorias antiguas en la tabla puente
+            try (PreparedStatement pstmtDelete = conn.prepareStatement(sqlDeleteCategorias)) {
+                pstmtDelete.setInt(1, libro.getId());
+                pstmtDelete.executeUpdate();
+            }
+            // Insertar las nuevas categorias seleccionadas
+            if (libro.getCategoriasIds() != null && !libro.getCategoriasIds().isEmpty()) {
+                try (PreparedStatement pstmtInsert = conn.prepareStatement(sqlInsertCategoria)) {
+                    for (Integer catId : libro.getCategoriasIds()) {
+                        pstmtInsert.setInt(1, libro.getId());
+                        pstmtInsert.setInt(2, catId);
+                        pstmtInsert.executeUpdate();
+                    }
+                }
+            }
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar libro: " + e.getMessage());
+            try {
+                if (conn != null)
+                    conn.rollback();
+            } catch (SQLException ex) {
+            }
+            return false;
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+            }
+        }
+    }
+
+    public boolean eliminarLibro(int id) {
+        String sql = "DELETE FROM libros WHERE id = ?";
+        try (Connection conn = ConexionBD.getConexion();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            int filasAfectadas = pstmt.executeUpdate();
+            // Devuelve true si elimina al menos 1 fila
+            return filasAfectadas > 0;
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar libro: " + e.getMessage());
+            return false;
+        }
+    }
+
 }
