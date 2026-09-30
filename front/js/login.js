@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('usuarioNombre', datosJava.nombre);
                     localStorage.setItem('usuarioEmail', datosJava.email);
                     localStorage.setItem('usuarioRol', datosJava.rol);
+                    localStorage.setItem('usuarioId', datosJava.id);
                     alert("Bienvenido " + datosJava.nombre)
                     if (datosJava.rol == 1) {
                         window.location.href = "../index.html";

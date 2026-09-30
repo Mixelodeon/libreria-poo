@@ -45,7 +45,7 @@
                 </li>
                 <!-- Iconos de acción -->
                 <li><a href="./html/login.html" title="Lista de Deseos"><i class="fas fa-heart"></i></a></li>
-                <li><a href="./html/login.html" title="Carrito"><i class="fas fa-shopping-cart"></i></a></li>
+                <li><a href="#" id="nav-carrito" title="Carrito"><i class="fas fa-shopping-cart"></i></a></li>
                 <li>
                     <a href="./html/login.html" class="btn-login" id="enlace-usuario" title="Perfil">
                         <i class="fas fa-user"></i> <span id="texto-bienvenida"></span>
@@ -103,6 +103,38 @@
                     <p class="autor">Varios Autores</p>
                     <p class="precio">35.00 €</p>
                     <button class="btn-agregar"><i class="fas fa-cart-plus"></i> Añadir</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5: CARRITO DE LA COMPRA (Oculto por defecto) -->
+        <section class="seccion-inicio" id="panel-carrito" style="display: none; margin-bottom: 40px;">
+            <h2>Tu Carrito de Compra</h2>
+            <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="background-color: var(--azul-oscuro); color: white;">
+                            <th style="padding: 12px; border-radius: 5px 0 0 0;">Portada</th>
+                            <th style="padding: 12px;">Título</th>
+                            <th style="padding: 12px;">Precio</th>
+                            <th style="padding: 12px;">Cantidad</th>
+                            <th style="padding: 12px; border-radius: 0 5px 0 0;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-carrito-body">
+                        <!-- El JS inyectará las filas aquí -->
+                    </tbody>
+                </table>
+                <div style="margin-top: 20px; text-align: right; border-top: 2px solid #eee; padding-top: 20px;">
+                    <h3>Total: <span id="precio-total-carrito">0.00</span> €</h3>
+                    <button id="btn-volver-tienda"
+                        style="background-color: #7f8c8d; color: white; padding: 10px 20px; border: none; font-weight: bold; border-radius: 5px; cursor: pointer; margin-right: 10px; font-size: 16px;">
+                        <i class="fas fa-arrow-left"></i> Seguir Comprando
+                    </button>
+                    <button
+                        style="background-color: var(--amarillo-acento); color: var(--azul-oscuro); padding: 10px 20px; border: none; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; font-size: 16px;">
+                        <i class="fas fa-credit-card"></i> Tramitar Pedido
+                    </button>
                 </div>
             </div>
         </section>

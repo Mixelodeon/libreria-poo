@@ -25,6 +25,8 @@ public class ServidorWEB {
         server.createContext("/api/usuarios", new UsuarioHandler());
         // Puerta: /api/categorias
         server.createContext("/api/categorias", new CategoriaHandler());
+        // Puerta: /api/carrito
+        server.createContext("/api/carrito", new CarritoHandler());
         // Enciende el servidor para que escuche infinitamente
         server.setExecutor(null);
         server.start();
@@ -60,15 +62,13 @@ public class ServidorWEB {
                 Usuario usuarioLogueado = dao.iniciarSesion(email, password);
 
                 if (usuarioLogueado != null) {
-                    // ¡Éxito!
-                    // Mediante los metodos get de la clase usuario paso aqui la informacion del
-                    // usuario que necesite
+                    int idUsuario = usuarioLogueado.getID();
                     String nombreUsuario = usuarioLogueado.getNombre();
                     String emailUsuario = usuarioLogueado.getEmail();
                     int rolUsuario = usuarioLogueado.getRol();
                     // Prepara el JSON
-                    String respuesta = "{\"mensaje\": \"ok\", \"nombre\": \"" + nombreUsuario + "\", \"email\": \""
-                            + emailUsuario + "\", \"rol\": " + rolUsuario + "}";
+                    String respuesta = "{\"mensaje\": \"ok\", \"id\": " + idUsuario + ", \"nombre\": \"" + nombreUsuario
+                            + "\", \"email\": \"" + emailUsuario + "\", \"rol\": " + rolUsuario + "}";
                     exchange.sendResponseHeaders(200, respuesta.length());
                     OutputStream os = exchange.getResponseBody();
                     os.write(respuesta.getBytes());
