@@ -72,7 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const rutaImagen = `./img/${libro.portadaURL}`;
                     tarjeta.innerHTML = `
                         <div class="contenedor-portada" style="text-align: center; margin-bottom: 15px;">
-                            <img src="${rutaImagen}" alt="Portada de ${libro.titulo}" style="max-width: 100%; height: 250px; object-fit: cover; border-radius: 8px;">
+                            <img src="${rutaImagen}" alt="Portada de ${libro.titulo}" style="max-width: 100%; height: 250px; object-fit: cover; border-radius: 8px; cursor: pointer;"
+                              onclick="verDetalleLibro(${libro.id})">
                         </div>
                         <h3 class="titulo">${libro.titulo}</h3>
                         <p class="autor">${libro.autor}</p>
@@ -119,7 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const rutaImagen = `./img/${libro.portadaURL}`;
                     tarjeta.innerHTML = `
                         <div class="contenedor-portada" style="text-align: center; margin-bottom: 15px;">
-                            <img src="${rutaImagen}" alt="Portada de ${libro.titulo}" style="max-width: 100%; height: 250px; object-fit: cover; border-radius: 8px;">
+                            <img src="${rutaImagen}" alt="Portada de ${libro.titulo}" style="max-width: 100%; height: 250px; object-fit: cover; border-radius: 8px; cursor: pointer;"
+                            onclick="verDetalleLibro(${libro.id})">
                         </div>
                         <h3 class="titulo">${libro.titulo}</h3>
                         <p class="autor">${libro.autor}</p>
@@ -274,4 +276,183 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('autores').style.display = 'block';
         document.getElementById('tecnicos').style.display = 'block';
     });
+
+    // Funcion para añadir un libro a la lista de deseo 
+    window.agregarDeseo = function (idLibro) {
+        const idUsuario = localStorage.getItem("usuarioId");
+        if (!idUsuario) {
+            alert("Debes iniciar sesión para guardar libros en tu lista de deseos.");
+            window.location.href = "./html/login.html";
+            return;
+        }
+
+        fetch(`http://localhost:8081/api/deseos`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idUsuario: parseInt(idUsuario), idLibro: parseInt(idLibro) })
+        })
+            .then(respuesta => {
+                if (respuesta.ok) {
+                    alert("¡Añadido a tu lista de deseis!")
+                } else if (respuesta.status === 409) {
+                    alert("¡Este libro ya se encuentra en tu lista de deseos!");
+                } else {
+                    alert("¡Error al guardar el libro en tu lista de deseos!")
+                }
+            }).catch(error => console.error("Error:", error));
+    };
+
+    // Funcion para cargar al cliente su lista de deseos
+    function cargarDeseos() {
+        const idUsuario = localStorage.getItem('usuarioId');
+        if (!idUsuario) {
+            alert("Debes iniciar sesión para consultar tu lista de deseos.");
+            window.location.href = "./html/login.html";
+            return;
+        }
+        fetch(`http://localhost:8081/api/deseos?usuario=${idUsuario}`)
+            .then(respuesta => respuesta.json())
+            .then(deseos => {
+                const grid = document.getElementById('grid-deseos');
+                grid.innerHTML = '';
+
+                if (deseos.length === 0) {
+                    grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Aún no tienes libros en tu lista de deseos.</p>';
+                    return;
+                }
+
+                deseos.forEach(item => {
+                    const div = document.createElement('div');
+                    div.style = "border: 1px solid #ddd; padding: 15px; border-radius: 8px; text-align: center; background: #fff;";
+                    div.innerHTML = `
+                    <img src="./img/${item.portadaUrl}" alt="${item.titulo}" style="width: 100px; height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
+                    <h4 style="margin: 5px 0;">${item.titulo}</h4>
+                    <p style="color: #27ae60; font-weight: bold; margin: 10px 0;">${item.precio.toFixed(2)} €</p>
+                    
+                    <button onclick="agregarCarrito(${item.idLibro})" style="background: #f39c12; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 8px; font-weight: bold;">
+                        <i class="fas fa-cart-plus"></i> Al carrito
+                    </button>
+                    <button onclick="eliminarDeseo(${item.id})" style="background: #c0392b; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; width: 100%;">
+                        <i class="fas fa-trash"></i> Quitar
+                    </button>
+                `;
+                    grid.appendChild(div);
+                });
+            }).catch(error => console.error("Error al cargar deseos:", error));
+    }
+
+    // Eliminar un libro de la lista de deseos
+    window.eliminarDeseo = function (idDeseo) {
+        if (!confirm("¿Seguro que quieres quitar este libro de tus deseos?")) {
+            return;
+        }
+
+        fetch(`http://localhost:8081/api/deseos?id=${idDeseo}`, {
+            method: 'DELETE'
+        })
+            .then(respuesta => {
+                if (respuesta.ok) cargarDeseos();
+            }).catch(error => console.error("Error al borrar el libro de la lista de deseos: ", error))
+    }
+
+    // Panel de navegacion de la lista de deseos
+    document.getElementById('nav-deseos').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!localStorage.getItem('usuarioId')) {
+            alert("Inicia sesión para ver tu lista de deseos");
+            window.location.href = "./html/login.html";
+            return;
+        }
+
+        // Desaparecer paneles principales y carrito
+        document.getElementById('destacados').style.display = 'none';
+        document.getElementById('sagas').style.display = 'none';
+        document.getElementById('autores').style.display = 'none';
+        document.getElementById('tecnicos').style.display = 'none';
+        document.getElementById('panel-carrito').style.display = 'none';
+
+        // Mostrar panel de deseos
+        document.getElementById('panel-deseos').style.display = 'block';
+        cargarDeseos();
+    })
+
+    // Boton de volver a la tienda
+    document.getElementById('btn-volver-tienda-deseos').addEventListener('click', () => {
+        document.getElementById('panel-deseos').style.display = 'none';
+        document.getElementById('destacados').style.display = 'block';
+        document.getElementById('sagas').style.display = 'block';
+        document.getElementById('autores').style.display = 'block';
+        document.getElementById('tecnicos').style.display = 'block';
+    });
+
+    // Mostrar libro detalladamente
+    window.verDetalleLibro = function (idLibro) {
+        // Manejamos la interfaz
+        document.getElementById('destacados').style.display = 'none';
+        document.getElementById('sagas').style.display = 'none';
+        document.getElementById('autores').style.display = 'none';
+        document.getElementById('tecnicos').style.display = 'none';
+        document.getElementById('panel-carrito').style.display = 'none';
+        document.getElementById('panel-deseos').style.display = 'none';
+
+        // Mostrar el panel que dara la informacion del libro
+        const panelDetalle = document.getElementById('panel-detalle-libro');
+        panelDetalle.style.display = 'block';
+
+        // Obtenemos el libro que va a ser mostrado
+        fetch('http://localhost:8081/api/libros')
+            .then(res => res.json())
+            .then(libros => {
+                // Fuerza a que ambos sean numeros
+                const libro = libros.find(l => parseInt(l.id) === parseInt(idLibro));
+                // Si el libro no existe vuelve
+                if (!libro) return;
+
+                // Dibuja el diseño de la interfaz detallada del libro
+                panelDetalle.innerHTML = `
+                <button onclick="cerrarDetalleLibro()" style="margin-bottom: 20px; background: none; border: none; color: #2980b9; cursor: pointer; font-size: 16px; font-weight: bold;">
+                    <i class="fas fa-arrow-left"></i> Volver a la tienda
+                </button>
+                
+                <div style="display: flex; gap: 40px; background: #fff; padding: 30px; border-radius: 8px; border: 1px solid #ddd;">
+                    <!-- Columna Izquierda: Portada -->
+                    <div style="flex: 1; max-width: 300px;">
+                        <img src="./img/${libro.portadaURL}" alt="${libro.titulo}" style="width: 100%; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    </div>
+                    
+                    <!-- Columna Derecha: Info y Botones de Compra -->
+                    <div style="flex: 2;">
+                        <h2 style="font-size: 28px; margin-bottom: 10px;">${libro.titulo}</h2>
+                        
+                        <div style="margin: 30px 0; padding: 20px; border: 1px solid #eee; border-radius: 8px; max-width: 350px;">
+                            <p style="font-size: 24px; color: #c0392b; font-weight: bold; margin: 0 0 20px 0;">${libro.precio.toFixed(2)} €</p>
+                            
+                            <!-- Botón principal de añadir a la cesta -->
+                            <button onclick="agregarAlCarrito(${libro.id})" style="background: #e91e63; color: white; border: none; padding: 15px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 15px;">
+                                <i class="fas fa-shopping-basket"></i> Añadir a la cesta
+                            </button>
+                            
+                            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                            
+                            <!-- Opciones secundarias -->
+                            <button onclick="agregarDeseo(${libro.id})" style="background: none; border: none; color: #34495e; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                                <i class="far fa-heart"></i> Añadir a mis listas
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).catch(error => console.error("Error al cargar el detalle del libro:", error));
+    }
+    // Funcion para volver al index
+    window.cerrarDetalleLibro = function () {
+        if (document.getElementById('panel-detalle-libro')) {
+            document.getElementById('panel-detalle-libro').style.display = 'none';
+        }
+        // Encendemos de nuevo los escaparates de la tienda
+        document.getElementById('destacados').style.display = 'block';
+        document.getElementById('sagas').style.display = 'block';
+        document.getElementById('autores').style.display = 'block';
+        document.getElementById('tecnicos').style.display = 'block';
+    };
 })

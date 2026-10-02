@@ -44,7 +44,7 @@
                     </ul>
                 </li>
                 <!-- Iconos de acción -->
-                <li><a href="./html/login.html" title="Lista de Deseos"><i class="fas fa-heart"></i></a></li>
+                <li><a href="#" id="nav-deseos" title="Lista de Deseos"><i class="fas fa-heart"></i></a></li>
                 <li><a href="#" id="nav-carrito" title="Carrito"><i class="fas fa-shopping-cart"></i></a></li>
                 <li>
                     <a href="./html/login.html" class="btn-login" id="enlace-usuario" title="Perfil">
@@ -107,7 +107,7 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 5: CARRITO DE LA COMPRA (Oculto por defecto) -->
+        <!-- CARRITO DE LA COMPRA -->
         <section class="seccion-inicio" id="panel-carrito" style="display: none; margin-bottom: 40px;">
             <h2>Tu Carrito de Compra</h2>
             <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
@@ -122,7 +122,7 @@
                         </tr>
                     </thead>
                     <tbody id="tabla-carrito-body">
-                        <!-- El JS inyectará las filas aquí -->
+
                     </tbody>
                 </table>
                 <div style="margin-top: 20px; text-align: right; border-top: 2px solid #eee; padding-top: 20px;">
@@ -137,6 +137,24 @@
                     </button>
                 </div>
             </div>
+        </section>
+
+        <!-- LISTA DE DESEOS -->
+        <section id="panel-deseos" style="display: none; padding: 20px;">
+            <h2><i class="fas fa-heart"></i> Tu Lista de Deseos</h2>
+            <div id="grid-deseos"
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+
+            </div>
+            <button id="btn-volver-tienda-deseos"
+                style="margin-top: 20px; background-color: #7f8c8d; color: white; padding: 10px 20px; border: none; font-weight: bold; border-radius: 5px; cursor: pointer;">
+                <i class="fas fa-arrow-left"></i> Seguir Comprando
+            </button>
+        </section>
+
+        <!-- Vista individual de Libro -->
+        <section id="panel-detalle-libro" style="display: none; padding: 20px; max-width: 1000px; margin: 0 auto;">
+
         </section>
 
     </main>

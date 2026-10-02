@@ -27,6 +27,8 @@ public class ServidorWEB {
         server.createContext("/api/categorias", new CategoriaHandler());
         // Puerta: /api/carrito
         server.createContext("/api/carrito", new CarritoHandler());
+        // Puerta : /api/deseos
+        server.createContext("/api/deseos", new DeseoHandler());
         // Enciende el servidor para que escuche infinitamente
         server.setExecutor(null);
         server.start();

@@ -1,15 +1,15 @@
 package PO_Objetos.Libreria.back;
 
-public class ItemCarrito {
+public class ItemDeseo {
     private int id;
     private int idUsuario;
     private int idLibro;
-    private int cantidad;
+    // Atributos necesarios para sacar con un INNER JOIN
     private String titulo;
     private double precio;
     private String portadaUrl;
 
-    public ItemCarrito() {
+    public ItemDeseo() {
 
     }
 
@@ -29,20 +29,12 @@ public class ItemCarrito {
         this.idUsuario = idUsuario;
     }
 
-    public int getIdLibro() {
+    public int GetIdLibro() {
         return idLibro;
     }
 
     public void setIdLibro(int idLibro) {
         this.idLibro = idLibro;
-    }
-
-    public int getCantidad() {
-        return cantidad;
-    }
-
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
     }
 
     public String getTitulo() {
@@ -61,7 +53,7 @@ public class ItemCarrito {
         this.precio = precio;
     }
 
-    public String getPortdaUrl() {
+    public String getPortadaUrl() {
         return portadaUrl;
     }
 

@@ -55,9 +55,10 @@ CREATE TABLE IF NOT EXISTS lista_deseos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     id_libro INT NOT NULL,
-    -- Definición de las Foreign Keys para enlazar
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_libro) REFERENCES libros(id) ON DELETE CASCADE
+    FOREIGN KEY (id_libro) REFERENCES libros(id) ON DELETE CASCADE,
+    -- Evita que el mismo usuario guarde el mismo libro 2 veces
+    UNIQUE KEY unico_deseo (id_usuario, id_libro) 
 );
 
 -- --- DATOS DE PRUEBA (Opcional, para tener algo con lo que jugar en Java) ---
