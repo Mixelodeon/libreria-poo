@@ -156,6 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('sagas').style.display = 'none';
         document.getElementById('autores').style.display = 'none';
         document.getElementById('tecnicos').style.display = 'none';
+        document.getElementById('panel-deseos').style.display = 'none';
+        document.getElementById('panel-detalle-libro').style.display = 'none';
         //Muestra el carrito
         document.getElementById('panel-carrito').style.display = 'block';
 
@@ -310,6 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = "./html/login.html";
             return;
         }
+
         fetch(`http://localhost:8081/api/deseos?usuario=${idUsuario}`)
             .then(respuesta => respuesta.json())
             .then(deseos => {
@@ -323,18 +326,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 deseos.forEach(item => {
                     const div = document.createElement('div');
-                    div.style = "border: 1px solid #ddd; padding: 15px; border-radius: 8px; text-align: center; background: #fff;";
+                    div.className = 'tarjeta-libro';
                     div.innerHTML = `
-                    <img src="./img/${item.portadaUrl}" alt="${item.titulo}" style="width: 100px; height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
-                    <h4 style="margin: 5px 0;">${item.titulo}</h4>
-                    <p style="color: #27ae60; font-weight: bold; margin: 10px 0;">${item.precio.toFixed(2)} €</p>
-                    
-                    <button onclick="agregarCarrito(${item.idLibro})" style="background: #f39c12; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 8px; font-weight: bold;">
-                        <i class="fas fa-cart-plus"></i> Al carrito
-                    </button>
-                    <button onclick="eliminarDeseo(${item.id})" style="background: #c0392b; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; width: 100%;">
-                        <i class="fas fa-trash"></i> Quitar
-                    </button>
+                    <div class="contenedor-portada" style="text-align: center; margin-bottom: 15px;">
+                            <!-- 2. FUNCIONALIDAD: Añadimos cursor: pointer y el onclick al libro -->
+                            <img src="./img/${item.portadaUrl}" alt="${item.titulo}" 
+                                 style="max-width: 100%; height: 250px; object-fit: cover; border-radius: 8px; cursor: pointer;" 
+                                 onclick="verDetalleLibro(${item.idLibro})">
+                        </div>
+                        
+                        <h3 class="titulo">${item.titulo}</h3>
+                        <p class="precio" style="color: #27ae60; font-weight: bold; margin-bottom: 15px;">${item.precio.toFixed(2)} €</p>
+                        
+                        <!-- Botones específicos de la lista de deseos -->
+                        <button onclick="agregarCarrito(${item.idLibro})" style="background: #f39c12; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 8px; font-weight: bold;">
+                            <i class="fas fa-cart-plus"></i> Al carrito
+                        </button>
+                        <button onclick="eliminarDeseo(${item.id})" style="background: #c0392b; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; width: 100%;">
+                            <i class="fas fa-trash"></i> Quitar
+                        </button>
                 `;
                     grid.appendChild(div);
                 });
@@ -370,6 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('autores').style.display = 'none';
         document.getElementById('tecnicos').style.display = 'none';
         document.getElementById('panel-carrito').style.display = 'none';
+        document.getElementById('panel-detalle-libro').style.display = 'none';
 
         // Mostrar panel de deseos
         document.getElementById('panel-deseos').style.display = 'block';
@@ -425,10 +436,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         <h2 style="font-size: 28px; margin-bottom: 10px;">${libro.titulo}</h2>
                         
                         <div style="margin: 30px 0; padding: 20px; border: 1px solid #eee; border-radius: 8px; max-width: 350px;">
-                            <p style="font-size: 24px; color: #c0392b; font-weight: bold; margin: 0 0 20px 0;">${libro.precio.toFixed(2)} €</p>
+                            <p style="font-size: 24px; color: #047857; font-weight: bold; margin: 0 0 20px 0;">${libro.precio.toFixed(2)} €</p>
                             
                             <!-- Botón principal de añadir a la cesta -->
-                            <button onclick="agregarAlCarrito(${libro.id})" style="background: #e91e63; color: white; border: none; padding: 15px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 15px;">
+                            <button onclick="agregarCarrito(${libro.id})" style="background: #fbbf24; color: white; border: none; padding: 15px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 15px;">
                                 <i class="fas fa-shopping-basket"></i> Añadir a la cesta
                             </button>
                             
