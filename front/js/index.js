@@ -466,4 +466,136 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('autores').style.display = 'block';
         document.getElementById('tecnicos').style.display = 'block';
     };
+
+    // Filtrar la saga los juegos del hambre
+    function cargarLosJuegosDelHambre() {
+        fetch('http://localhost:8081/api/libros')
+            .then(respuesta => {
+                if (!respuesta.ok) throw new Error("Error al obtener los libros.");
+                return respuesta.json();
+            })
+            .then(libros => {
+                const contenedor = document.getElementById('contenedor-sagas');
+                contenedor.innerHTML = '';
+                // Busca los que incluyan "juegos del hambre" en el titulo
+                // toLowerCase() para que no importe si en la bd esta en mayusculas o minusculas
+                const libroSaga = libros.filter(libro =>
+                    libro.titulo.toLowerCase().includes('juegos del hambre')
+                )
+                if (libroSaga.length === 0) {
+                    contenedor.innerHTML = '<p>No hay libros de esta saga disponibles en este momento.</p>';
+                    return;
+                }
+
+                libroSaga.forEach(libro => {
+                    const tarjeta = document.createElement('div');
+                    tarjeta.className = 'tarjeta-libro';
+                    const rutaImagen = `./img/${libro.portadaURL}`;
+                    tarjeta.innerHTML = `
+                    <div class="contenedor-portada" style="text-align: center; margin-bottom: 15px;">
+                        <img src="${rutaImagen}" alt="Portada de ${libro.titulo}" 
+                             style="max-width: 100%; height: 250px; object-fit: cover; border-radius: 8px; cursor: pointer;" 
+                             onclick="verDetalleLibro(${libro.id})">
+                    </div>
+                    <h3 class="titulo">${libro.titulo}</h3>
+                    <p class="autor">${libro.autor}</p>
+                    <p class="precio">${libro.precio.toFixed(2)} €</p>
+                    <button class="btn-agregar" onclick="agregarCarrito(${libro.id})"><i class="fas fa-cart-plus"></i> Añadir</button>
+                    `;
+                    contenedor.appendChild(tarjeta);
+                })
+            }).catch(error => {
+                console.error("Error cargando la saga: ", error);
+                document.getElementById('contenedor-sagas').innerHTML = '<p style="color: red;">Error al cargar la saga.</p>';
+            });
+    }
+
+    // Funcion para libros de desarrollo
+    function cargarLibrosTecnicos() {
+        fetch('http://localhost:8081/api/libros')
+            .then(respuesta => {
+                if (!respuesta.ok) throw new Error("Error al obtener los libros.");
+                return respuesta.json();
+            })
+            .then(libros => {
+                const contenedor = document.getElementById('contenedor-tecnicos');
+                contenedor.innerHTML = '';
+                // Filtro para los libros
+                const palabrasClave = ['java', 'javascript', 'html', 'python', 'mysql', 'sql', 'programacion', 'programación', 'desarrollo', 'web'];
+                const librosTecnicos = libros.filter(libro => {
+                    const titulo = libro.titulo.toLowerCase();
+                    return palabrasClave.some(palabra => titulo.includes(palabra));
+                });
+                if (librosTecnicos.length === 0) {
+                    contenedor.innerHTML = '<p>No hay manuales ni libros técnicos disponibles en este momento.</p>';
+                    return;
+                }
+                librosTecnicos.forEach(libro => {
+                    const tarjeta = document.createElement('div');
+                    tarjeta.className = 'tarjeta-libro';
+                    const rutaImagen = `./img/${libro.portadaURL}`;
+
+                    tarjeta.innerHTML = `
+                    <div class="contenedor-portada" style="text-align: center; margin-bottom: 15px;">
+                        <img src="${rutaImagen}" alt="Portada de ${libro.titulo}" 
+                             style="max-width: 100%; height: 250px; object-fit: cover; border-radius: 8px; cursor: pointer;" 
+                             onclick="verDetalleLibro(${libro.id})">
+                    </div>
+                    <h3 class="titulo">${libro.titulo}</h3>
+                    <p class="autor">${libro.autor}</p>
+                    <p class="precio">${libro.precio.toFixed(2)} €</p>
+                    <button class="btn-agregar" onclick="agregarCarrito(${libro.id})"><i class="fas fa-cart-plus"></i> Añadir</button>
+                   `;
+                    contenedor.appendChild(tarjeta);
+                })
+                    .catch(error => {
+                        console.error("Error cargando los libros técnicos: ", error);
+                        document.getElementById('contenedor-tecnicos').innerHTML = '<p style="color: red;">Error al cargar la sección técnica.</p>';
+                    });
+            })
+    }
+
+    function cargarLibrosRebeccaYarros() {
+        fetch('http://localhost:8081/api/libros')
+            .then(respuesta => {
+                if (!respuesta.ok) throw new Error("Error al obtener los libros.");
+                return respuesta.json();
+            })
+            .then(libros => {
+                const contenedor = document.getElementById('contenedor-autores');
+                contenedor.innerHTML = '';
+                const libroAutor = libros.filter(libro =>
+                    libro.autor.toLowerCase().includes('rebecca yarros')
+                )
+                if (libroAutor.length === 0) {
+                    contenedor.innerHTML = '<p>No hay libros de la autora disponibles en este momento.</p>';
+                    return;
+                }
+
+                libroAutor.forEach(libro => {
+                    const tarjeta = document.createElement('div');
+                    tarjeta.className = 'tarjeta-libro';
+                    const rutaImagen = `./img/${libro.portadaURL}`;
+                    tarjeta.innerHTML = `
+                    <div class="contenedor-portada" style="text-align: center; margin-bottom: 15px;">
+                        <img src="${rutaImagen}" alt="Portada de ${libro.titulo}" 
+                             style="max-width: 100%; height: 250px; object-fit: cover; border-radius: 8px; cursor: pointer;" 
+                             onclick="verDetalleLibro(${libro.id})">
+                    </div>
+                    <h3 class="titulo">${libro.titulo}</h3>
+                    <p class="autor">${libro.autor}</p>
+                    <p class="precio">${libro.precio.toFixed(2)} €</p>
+                    <button class="btn-agregar" onclick="agregarCarrito(${libro.id})"><i class="fas fa-cart-plus"></i> Añadir</button>
+                    `;
+                    contenedor.appendChild(tarjeta);
+                })
+            }).catch(error => {
+                console.error("Error cargando libros de la autora: ", error);
+                document.getElementById('contenedor-autores').innerHTML = '<p style="color: red;">Error al cargar libros de la autora.</p>';
+            });
+    }
+
+    cargarLosJuegosDelHambre();
+    cargarLibrosTecnicos();
+    cargarLibrosRebeccaYarros();
 })
