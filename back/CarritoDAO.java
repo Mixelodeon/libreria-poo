@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CarritoDAO {
     public boolean agregarAlCarrito(int idUsuario, int idLibro) {
@@ -83,4 +85,35 @@ public class CarritoDAO {
             return false;
         }
     }
+
+    // Permite al admin ver los pedidos de diferentes clientes desde su panel
+    public List<PedidoAdminDTO> obtenerPedidosClientes() {
+        List<PedidoAdminDTO> pedidos = new ArrayList<>();
+        String sql = "SELECT c.id, u.nombre, u.email, l.titulo, c.cantidad, l.precio, (c.cantidad * l.precio) AS total "
+                + "FROM carrito c " +
+                "INNER JOIN usuarios u ON c.id_usuario = u.id " +
+                "INNER JOIN libros l ON c.id_libro = l.id " +
+                "ORDER BY u.nombre ASC";
+        try (Connection conn = ConexionBD.getConexion();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                PedidoAdminDTO pedido = new PedidoAdminDTO();
+                pedido.setIdLinea(rs.getInt("id"));
+                pedido.setNombreUsuario(rs.getString("nombre"));
+                pedido.setEmailUsuario(rs.getString("email"));
+                pedido.setTituloLibro(rs.getString("titulo"));
+                pedido.setCantidad(rs.getInt("cantidad"));
+                pedido.setPrecioUnitario(rs.getDouble("precio"));
+                pedido.setTotalLinea(rs.getDouble("total"));
+
+                pedidos.add(pedido);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return pedidos;
+    }
+
 }

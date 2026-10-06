@@ -421,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Dibuja el diseño de la interfaz detallada del libro
                 panelDetalle.innerHTML = `
-                <button onclick="cerrarDetalleLibro()" style="margin-bottom: 20px; background: none; border: none; color: #2980b9; cursor: pointer; font-size: 16px; font-weight: bold;">
+                <button onclick="cerrarDetalleLibro()" style="margin-bottom: 20px; background: none; border: none; color: #10b981; cursor: pointer; font-size: 16px; font-weight: bold;">
                     <i class="fas fa-arrow-left"></i> Volver a la tienda
                 </button>
                 
@@ -548,11 +548,10 @@ document.addEventListener('DOMContentLoaded', () => {
                    `;
                     contenedor.appendChild(tarjeta);
                 })
-                    .catch(error => {
-                        console.error("Error cargando los libros técnicos: ", error);
-                        document.getElementById('contenedor-tecnicos').innerHTML = '<p style="color: red;">Error al cargar la sección técnica.</p>';
-                    });
-            })
+            }).catch(error => {
+                console.error("Error cargando los libros técnicos: ", error);
+                document.getElementById('contenedor-tecnicos').innerHTML = '<p style="color: red;">Error al cargar la sección técnica.</p>';
+            });
     }
 
     function cargarLibrosRebeccaYarros() {

@@ -446,6 +446,57 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarUsuarios();
     cargarLibros();
 
+    // Administracion de pedidos de clientes
+    document.getElementById('nav-pedidos').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (document.getElementById('panel-libros')) {
+            document.getElementById('panel-libros').style.display = 'none';
+        }
+        if (document.getElementById('panel-usuarios')) {
+            document.getElementById('panel-usuarios').style.display = 'none';
+        }
+        const panelPedidos = document.getElementById('panel-pedidos');
+        if (panelPedidos) {
+            panelPedidos.style.display = 'block';
+        }
+        cargarPedidosClientes();
+    })
+
+    // Obtener los pedidos de los clientes
+    function cargarPedidosClientes() {
+        fetch('http://localhost:8081/api/pedidos')
+            .then(respuesta => {
+                if (!respuesta.ok) throw new Error("Error al obtener los pedidos del servidor");
+                return respuesta.json();
+            })
+            .then(pedidos => {
+                const tbody = document.getElementById('tabla-pedidos-body');
+                tbody.innerHTML = '';
+                if (pedidos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No hay carritos activos ni pedidos en curso.</td></tr>';
+                    return;
+                }
+                pedidos.forEach(pedido => {
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = "1px solid #eee";
+                    tr.innerHTML = `
+                    <td style="padding: 12px;">#${pedido.idLinea}</td>
+                    <td style="padding: 12px; font-weight: bold;">${pedido.nombreUsuario}</td>
+                    <td style="padding: 12px; color: #7f8c8d;">${pedido.emailUsuario}</td>
+                    <td style="padding: 12px; color: #2980b9;">${pedido.tituloLibro}</td>
+                    <td style="padding: 12px; text-align: center; font-weight: bold;">${pedido.cantidad}</td>
+                    <td style="padding: 12px;">${pedido.precioUnitario.toFixed(2)} €</td>
+                    <td style="padding: 12px; color: #27ae60; font-weight: bold;">${pedido.totalLinea.toFixed(2)} €</td>
+                `;
+                    tbody.appendChild(tr);
+                })
+            }).catch(error => {
+                console.error("Error al cargar pedidos: ", error);
+                document.getElementById('tabla-pedidos-body').innerHTML =
+                    '<tr><td colspan="7" style="text-align: center; color: red; padding: 20px;">Error de conexión. Comprueba que el servidor Java está encendido.</td></tr>';
+            });
+    }
+
     // Cerrar sesion
     document.getElementById('btn-logout-admin').addEventListener('click', (e) => {
         e.preventDefault();
