@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const navLibros = document.getElementById('nav-libros');
     const navUsuarios = document.getElementById('nav-usuarios');
+    const navPedidos = document.getElementById('nav-pedidos');
     const panelBienvenida = document.getElementById('panel-bienvenida');
     const panelLibros = document.getElementById('panel-libros');
     const panelUsuarios = document.getElementById('panel-usuarios');
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const contenedorTablaLibros = document.getElementById('contenedor-tabla-libros');
     const panelNuevoLibro = document.getElementById('panel-nuevo-libro');
     const panelEditarLibro = document.getElementById('panel-editar-libro');
+    const panelPedidos = document.getElementById('panel-pedidos');
 
     // Logica de la navegacion por el menu de la interfaz
     navLibros.addEventListener('click', (e) => {
@@ -29,10 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Oculta la bienvenida al admin y muestra el form 
         panelBienvenida.style.display = 'none';
         panelUsuarios.style.display = 'none';
+        panelPedidos.style.display = 'none';
         panelLibros.style.display = 'block';
+
         // Actualizamos el titulo
-        tituloSeccion.textContent = "Añadir Nuevo Libro";
+        tituloSeccion.textContent = "Panel De Inventario";
         navUsuarios.classList.remove('activo');
+        navPedidos.classList.remove('activo');
         navLibros.classList.add('activo');
     })
 
@@ -40,10 +45,27 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         panelBienvenida.style.display = 'none';
         panelLibros.style.display = 'none';
+        panelPedidos.style.display = 'none';
         panelUsuarios.style.display = 'block';
         tituloSeccion.textContent = "Panel De Usuarios";
         navLibros.classList.remove('activo');
+        navPedidos.classList.remove('activo');
         navUsuarios.classList.add('activo');
+    })
+
+    navPedidos.addEventListener('click', (e) => {
+        e.preventDefault();
+        panelBienvenida.style.display = 'none';
+        panelLibros.style.display = 'none';
+        panelUsuarios.style.display = 'none';
+        panelPedidos.style.display = 'block';
+
+        tituloSeccion.textContent = "Panel De Pedidos";
+        navLibros.classList.remove('activo');
+        navUsuarios.classList.remove('activo');
+        navPedidos.classList.add('activo');
+
+        cargarPedidosClientes();
     })
 
     // Control del panel añadir/editar/borrar libros
@@ -442,25 +464,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
     cargarUsuarios();
     cargarLibros();
-
-    // Administracion de pedidos de clientes
-    document.getElementById('nav-pedidos').addEventListener('click', (e) => {
-        e.preventDefault();
-        if (document.getElementById('panel-libros')) {
-            document.getElementById('panel-libros').style.display = 'none';
-        }
-        if (document.getElementById('panel-usuarios')) {
-            document.getElementById('panel-usuarios').style.display = 'none';
-        }
-        const panelPedidos = document.getElementById('panel-pedidos');
-        if (panelPedidos) {
-            panelPedidos.style.display = 'block';
-        }
-        cargarPedidosClientes();
-    })
 
     // Obtener los pedidos de los clientes
     function cargarPedidosClientes() {

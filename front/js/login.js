@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
             password: password
         }
 
-        console.log("Intentado iniciar sesion con: ", credenciales);
+        // console.log("Intentado iniciar sesion con: ", credenciales);
 
         // Envio de datos
         fetch('http://localhost:8081/api/login', {

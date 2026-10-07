@@ -57,7 +57,7 @@ public class ServidorWEB {
             if ("POST".equalsIgnoreCase(metodo)) {
                 InputStream is = exchange.getRequestBody();
                 String body = new String(is.readAllBytes());
-                System.out.println("¡Intento de Login!: " + body);
+                // System.out.println("¡Intento de Login!: " + body);
 
                 String email = extraerValor(body, "email");
                 String password = extraerValor(body, "password");
