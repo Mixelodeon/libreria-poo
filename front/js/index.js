@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
         enlaceUsuario.href = "#";
         enlaceUsuario.title = "Perfil";
 
+        document.getElementById("item-listaDeseo").style.display = 'block';
+        document.getElementById("item-carrito").style.display = 'block';
+
         // Ocultar icono del usuario
         const iconoUsuario = enlaceUsuario.querySelector('.fa-user');
         if (iconoUsuario) {
@@ -37,9 +40,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('btn-logout').addEventListener('click', (e) => {
             e.preventDefault();
-            // Libera localStorege de los datos del usuario
-            localStorage.clear();
-            window.location.reload();
+            Alertas.exito('¡Sesión cerrada!', 'Volviendo a la página principal.')
+                .then(() => {
+                    // Libera localStorege de los datos del usuario
+                    localStorage.clear();
+                    window.location.href = 'index.html';
+                    // window.location.reload();
+                })
         })
     }
 
@@ -146,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         // Comprueba si el usuario esta logueado en la web 
         if (!localStorage.getItem('usuarioId')) {
-            alert("Debes iniciar sesión para ver tu carrito:");
+            Alertas.warning('¡Usuario no encontrado!', 'Debes iniciar sesión para ver tu carrito.');
             window.location.href = "./html/login.html";
             return;
         }
@@ -179,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.agregarCarrito = function (idLibro) {
         const idUsuario = localStorage.getItem('usuarioId');
         if (!idUsuario) {
-            alert("Debes iniciar sesión para añadir libros al carrito.");
+            Alertas.warning('¡Usuario no encontrado!', 'Debes iniciar sesión para añadir libros al carrito.');
             window.location.href = "./html/login.html";
             return;
         }
@@ -194,31 +201,75 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(respuesta => {
                 if (respuesta.ok) {
-                    alert("¡Libro añadido a tu carrito!");
+                    Alertas.exito('¡Libro añadido!', '¡El libro se ha añadido a tu carrito!');
                 } else {
-                    alert("Error al añadir el libro al carrito.");
+                    Alertas.error('¡Error!', 'Error al añadir el libro al carrito.');
                 }
             })
             .catch(error => console.error("Error de conexión:", error));
     }
 
     window.eliminarDelCarrito = function (idCarrito) {
-        if (!confirm("¿Seguro que quieres quitar este libro de la cesta?")) {
-            return;
-        }
-
-        fetch(`http://localhost:8081/api/carrito?id=${idCarrito}`, {
-            method: 'DELETE'
-        })
-            .then(respuesta => {
-                if (respuesta.ok) {
-                    // Si se borra bien en Java recargamos la tabla visual
-                    cargarCarrito();
-                } else {
-                    alert("Hubo un problema al eliminar el libro.");
+        Alertas.decision('¿Quitar del carrito?', '¿Seguro que quieres quitar este libro de la cesta?', 'Sí, quitar')
+            .then((resultado) => {
+                if (resultado.isConfirmed) {
+                    fetch(`http://localhost:8081/api/carrito?id=${idCarrito}`, {
+                        method: 'DELETE'
+                    })
+                        .then(respuesta => {
+                            if (respuesta.ok) {
+                                Alertas.exito('¡Eliminado!', 'El libro ha sido retirado de la cesta.');
+                                // Si se borra bien en Java recargamos la tabla visual
+                                cargarCarrito();
+                            } else {
+                                Alertas.error('¡!Error', 'Hubo un problema al eliminar el libro.');
+                            }
+                        })
+                        .catch(error => console.error("Error al borrar el libro:", error));
                 }
             })
-            .catch(error => console.error("Error al borrar el libro:", error));
+    };
+
+    window.restarUnidad = function (idCarrito, cantidadActual) {
+        // Si solo queda 1, usa la funcion existente para que pregunte si quiere borrarlo
+        if (cantidadActual === 1) {
+            eliminarDelCarrito(idCarrito);
+            return;
+        }
+        // Si hay mas de 1, envia un PUT a Java con la nueva cantidad
+        const datos = {
+            id: idCarrito,
+            cantidad: cantidadActual - 1
+        };
+        fetch('http://localhost:8081/api/carrito', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        })
+            .then(respuesta => {
+                // Recarga la tabla para ver el nuevo número
+                if (respuesta.ok) cargarCarrito();
+                else Alertas.error('¡Error!', 'No se pudo actualizar la cantidad.');
+            })
+            .catch(error => console.error("Error al restar unidad:", error));
+    }
+
+    window.sumarUnidad = function (idCarrito, cantidadActual) {
+        const datos = {
+            id: idCarrito,
+            cantidad: cantidadActual + 1
+        };
+
+        fetch('http://localhost:8081/api/carrito', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        })
+            .then(respuesta => {
+                if (respuesta.ok) cargarCarrito();
+                else Alertas.error('¡Error!', 'No se pudo añadir más cantidad.');
+            })
+            .catch(error => console.error("Error al sumar unidad:", error));
     };
 
     // Mostrar tabla con los libros en el carrito
@@ -257,6 +308,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td style="padding: 10px; border-bottom: 1px solid #ddd; font-weight: bold;">${item.titulo}</td>
                     <td style="padding: 10px; border-bottom: 1px solid #ddd;">${item.precio.toFixed(2)} €</td>
                     <td style="padding: 10px; border-bottom: 1px solid #ddd;">${item.cantidad}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #ddd; min-width: 100px;">
+                        <button onclick="restarUnidad(${item.id}, ${item.cantidad})" style="background: #f39c12; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;" title="Quitar uno">-</button>
+                        <span style="margin: 0 10px; font-weight: bold; font-size: 16px;">${item.cantidad}</span>
+                        <button onclick="sumarUnidad(${item.id}, ${item.cantidad})" style="background: #2ecc71; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;" title="Añadir uno">+</button>
+                    </td>
                     <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">
                         <button onclick="eliminarDelCarrito(${item.id})" style="background: #e74c3c; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;" title="Eliminar un libro">
                             <i class="fas fa-trash"></i>
@@ -283,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.agregarDeseo = function (idLibro) {
         const idUsuario = localStorage.getItem("usuarioId");
         if (!idUsuario) {
-            alert("Debes iniciar sesión para guardar libros en tu lista de deseos.");
+            Alertas.warning('¡Usuario no encontrado!', 'Debes iniciar sesión para guardar libros en tu lista de deseos.');
             window.location.href = "./html/login.html";
             return;
         }
@@ -295,11 +351,11 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(respuesta => {
                 if (respuesta.ok) {
-                    alert("¡Añadido a tu lista de deseis!")
+                    Alertas.exito('¡Libro añadido!', '¡Libro añadido a tu lista de deseos!')
                 } else if (respuesta.status === 409) {
-                    alert("¡Este libro ya se encuentra en tu lista de deseos!");
+                    Alertas.warning('¡Libro encontrado!', '¡Este libro ya se encuentra en tu lista de deseos!');
                 } else {
-                    alert("¡Error al guardar el libro en tu lista de deseos!")
+                    Alertas.error('¡Error!', '¡Error al guardar el libro en tu lista de deseos!');
                 }
             }).catch(error => console.error("Error:", error));
     };
@@ -308,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function cargarDeseos() {
         const idUsuario = localStorage.getItem('usuarioId');
         if (!idUsuario) {
-            alert("Debes iniciar sesión para consultar tu lista de deseos.");
+            Alertas.warning("Debes iniciar sesión para consultar tu lista de deseos.");
             window.location.href = "./html/login.html";
             return;
         }
@@ -353,23 +409,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Eliminar un libro de la lista de deseos
     window.eliminarDeseo = function (idDeseo) {
-        if (!confirm("¿Seguro que quieres quitar este libro de tus deseos?")) {
-            return;
-        }
-
-        fetch(`http://localhost:8081/api/deseos?id=${idDeseo}`, {
-            method: 'DELETE'
-        })
-            .then(respuesta => {
-                if (respuesta.ok) cargarDeseos();
-            }).catch(error => console.error("Error al borrar el libro de la lista de deseos: ", error))
+        Alertas.decision('¿Quitar de la lista de deseo?', '¿Seguro que quieres quitar este libro de tu lista?', 'Sí, quitar')
+            .then((resultado) => {
+                if (resultado.isConfirmed) {
+                    fetch(`http://localhost:8081/api/deseos?id=${idDeseo}`, {
+                        method: 'DELETE'
+                    })
+                        .then(respuesta => {
+                            if (respuesta.ok) {
+                                Alertas.exito('¡Eliminado!', 'El libro ha sido retirado de tu lista.');
+                                cargarDeseos();
+                            }
+                        }).catch(error => console.error("Error al borrar el libro de la lista de deseos: ", error))
+                }
+            })
     }
 
     // Panel de navegacion de la lista de deseos
     document.getElementById('nav-deseos').addEventListener('click', (e) => {
         e.preventDefault();
         if (!localStorage.getItem('usuarioId')) {
-            alert("Inicia sesión para ver tu lista de deseos");
+            Alertas.warning("Inicia sesión para ver tu lista de deseos");
             window.location.href = "./html/login.html";
             return;
         }

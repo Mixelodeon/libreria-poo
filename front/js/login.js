@@ -27,20 +27,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('usuarioEmail', datosJava.email);
                     localStorage.setItem('usuarioRol', datosJava.rol);
                     localStorage.setItem('usuarioId', datosJava.id);
-                    alert("Bienvenido " + datosJava.nombre)
-                    if (datosJava.rol == 1) {
-                        window.location.href = "../index.html";
-                    } else {
-                        window.location.href = "../html/admin.html";
-                    }
-
+                    Alertas.exito('¡Bienvenido!', `Hola ${datosJava.nombre}, has iniciado sesión.`)
+                        .then(() => {
+                            if (datosJava.rol == 1) {
+                                window.location.href = "../index.html";
+                            } else {
+                                window.location.href = "../html/admin.html";
+                            }
+                        })
                 } else {
-                    alert("¡Email o contraseña incorrectos!")
+                    Alertas.warning('¡Error de credenciales!', 'El correo y/o la contraseña no son correctos.')
+                    // Vacia solo la contraseña
+                    document.getElementById('password').value = '';
                 }
             })
             .catch(error => {
                 console.error("Error intentando conectar con Java: ", error);
-                alert("El servidor está apagado o no responde.");
+                Alertas.error('¡Error de conexión!', '¡El servidor está apagado o no responde!');
             })
 
     })

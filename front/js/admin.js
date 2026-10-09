@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Convierte el dato en un numero entero
     const rol = parseInt(rolUsuario);
     if (rol !== 0) {
-        alert("Acceso denegado. No tienes los permisos necesarios.");
+        Alertas.error('Acceso denegado', 'No tienes los permisos necesarios para acceder.');
         window.location.href = "../index.html";
         return;
     }
@@ -97,24 +97,62 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             // Busca los checkbox que el usuario haya seleccionado
             const checkboxMarcados = document.querySelectorAll('input[name="categoriaCheckbox"]:checked');
-            // Extraemos el valor de cada uno y lo convertimos en numero entero
+            // Extrae el valor de cada uno y lo converte en numero entero
             const categoriasSeleccionadas = Array.from(checkboxMarcados).map(checkbox => parseInt(checkbox.value));
-            // Validacion rapida para que no mande un libro sin categoria
-            if (categoriasSeleccionadas.length === 0) {
-                alert("Por favor, selecione una categoría.")
+            //Extraccion de los demas datos del form
+            const titulo = document.getElementById('titulo').value.trim();
+            const autor = document.getElementById('autor').value.trim();
+            const precio = document.getElementById('precio').value.trim();
+            const editorial = document.getElementById('editorial').value.trim();
+            const numPaginas = document.getElementById('numPaginas').value.trim();
+            const portadaURL = document.getElementById('portadaURL').value.trim();
+
+            // Validacion generica de campos vacios 
+            // isNaN comprueba si precio o numPaginas no son numeros validos
+            if (!titulo || !autor || isNaN(precio) || !editorial || isNaN(numPaginas) || !portadaURL) {
+                Alertas.warning('¡Campos incompletos!', 'Por favor, rellene todos los campos para poder guardar el libro.');
                 return;
             }
+            // Validacion longitud minima en textos
+            if (titulo.length < 3 || autor.length < 3 || editorial.length < 3) {
+                Alertas.warning('¡Texto muy corto!', 'El título, autor y editorial deben tener al menos 3 caracteres.');
+                return;
+            }
+            // Validacion para evitar numeros en el autor
+            const tieneNumeros = /\d/;
+            if (tieneNumeros.test(autor)) {
+                Alertas.warning('¡Autor inválido!', 'El nombre del autor no puede contener números.');
+                return;
+            }
+            // Validar numeros logicos en precio y numero de paginas
+            if (precio <= 0 || numPaginas <= 0) {
+                Alertas.warning('¡Valores irreales!', 'El precio y el número de páginas deben ser mayores a 0.');
+                return;
+            }
+            // Validar que realmente contenga el '.' de la url de portada
+            if (!portadaURL.includes('.')) {
+                Alertas.warning('¡Archivo inválido!', 'El nombre de la portada debe contener una extensión válida (ejemplo: portada.jpg o .png).');
+                return;
+            }
+            // Validacion rapida para que no mande un libro sin categoria
+            if (categoriasSeleccionadas.length === 0) {
+                Alertas.warning('¡Sin Categoría!', 'Por favor, seleccione al menos una categoría.');
+                return;
+            }
+
             const nuevoLibro = {
-                titulo: document.getElementById('titulo').value,
-                autor: document.getElementById('autor').value,
-                precio: parseFloat(document.getElementById('precio').value),
+                titulo: titulo,
+                autor: autor,
+                precio: parseFloat(precio),
                 categoriasIds: categoriasSeleccionadas,
-                editorial: document.getElementById('editorial').value,
-                numPaginas: parseInt(document.getElementById('numPaginas').value),
-                portadaURL: document.getElementById('portadaURL').value,
+                editorial: editorial,
+                numPaginas: parseInt(numPaginas),
+                portadaURL: portadaURL,
                 destacado: document.getElementById('destacado').checked
             };
+
             console.log("Enviando libro a Java:", nuevoLibro);
+
             fetch('http://localhost:8081/api/libros', {
                 method: 'POST',
                 headers: {
@@ -124,21 +162,23 @@ document.addEventListener('DOMContentLoaded', () => {
             })
                 .then(respuesta => {
                     if (respuesta.ok) {
-                        alert("¡Éxito! Libro añadido al catálogo.");
-                        formNuevoLibro.reset(); // Limpia los campos del formulario automáticamente
-                        // Ocultar formulario y recargar la tabla
-                        document.getElementById('panel-nuevo-libro').style.display = 'none';
-                        document.getElementById('contenedor-tabla-libros').style.display = 'block';
-                        document.getElementById('titulo-seccion').textContent = "Gestión de Libros";
-                        // Vuelve a pedir los libros a la bd
-                        cargarLibros();
+                        Alertas.exito('¡Éxito!', '¡Libro añadido al catálogo exitosamente!')
+                            .then(() => {
+                                formNuevoLibro.reset(); // Limpia los campos del formulario automáticamente
+                                // Ocultar formulario y recargar la tabla
+                                document.getElementById('panel-nuevo-libro').style.display = 'none';
+                                document.getElementById('contenedor-tabla-libros').style.display = 'block';
+                                document.getElementById('titulo-seccion').textContent = "Gestión de Libros";
+                                // Vuelve a pedir los libros a la bd
+                                cargarLibros();
+                            })
                     } else {
-                        alert("Hubo un error al guardar el libro en la base de datos.");
+                        Alertas.error('¡Error!', '¡Error detectado al guardar el libro en la base de datos!')
                     }
                 })
                 .catch(error => {
                     console.error("Error de conexión:", error);
-                    alert("El servidor está apagado o no responde.");
+                    Alertas.error('¡Error!', '¡El servidor esta apagado o no responde!')
                 });
         })
     }
@@ -298,13 +338,42 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formEditarUsuario) {
         formEditarUsuario.addEventListener('submit', (e) => {
             e.preventDefault();
+            // Extraer y limpiar valores
+            const idUsuario = parseInt(document.getElementById('edit-id').value);
+            const nombre = document.getElementById('edit-nombre').value.trim();
+            const apellidos = document.getElementById('edit-apellidos').value.trim();
+            const email = document.getElementById('edit-email').value.trim();
+            const rol = parseInt(document.getElementById('edit-rol').value);
+
+            // Validacion para evitar campos vacios en el form 
+            if (!nombre || !apellidos || !email || isNaN(rol)) {
+                Alertas.warning('¡Campos incompletos!', 'Por favor, rellene todos los campos del usuario.');
+                return;
+            }
+            // Validar la longitud minima de un nombre 
+            if (nombre.length < 2 || apellidos.length < 2) {
+                Alertas.warning('¡Texto muy corto!', 'El nombre y los apellidos deben tener al menos 2 caracteres.');
+                return;
+            }
+            // Validacion para evitar numeros en nombres o apellidos
+            const tieneNumeros = /\d/;
+            if (tieneNumeros.test(nombre) || tieneNumeros.test(apellidos)) {
+                Alertas.warning('¡Formato inválido!', 'El nombre y los apellidos no pueden contener números.');
+                return;
+            }
+            // Validacion para una direccion de correo electronico real
+            const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!regexEmail.test(email)) {
+                Alertas.warning('¡Email inválido!', 'Por favor, introduzca una dirección de correo electrónico válida (ejemplo: usuario@correo.com).');
+                return;
+            }
             // Recoleta los datos, convirtiendo a numeros el id y el Rol
             const usuarioEditado = {
-                id: parseInt(document.getElementById('edit-id').value),
-                nombre: document.getElementById('edit-nombre').value,
-                apellidos: document.getElementById('edit-apellidos').value,
-                email: document.getElementById('edit-email').value,
-                rol: parseInt(document.getElementById('edit-rol').value)
+                id: idUsuario,
+                nombre: nombre,
+                apellidos: apellidos,
+                email: email,
+                rol: rol
             };
             // Envia con metodo PUT
             fetch('http://localhost:8081/api/usuarios', {
@@ -316,21 +385,19 @@ document.addEventListener('DOMContentLoaded', () => {
             })
                 .then(respuesta => {
                     if (respuesta.ok) {
-                        alert("¡Usuario actualizado con éxito!");
-
-                        // 1. Ocultar formulario y mostrar tabla
-                        document.getElementById('panel-editar-usuario').style.display = 'none';
-                        document.getElementById('contenedor-tabla-usuarios').style.display = 'block';
-
-                        // 2. Refrescar la tabla mágicamente para ver los cambios al instante
-                        cargarUsuarios();
+                        Alertas.exito('¡Éxito!', '¡El usuario ha sido actualizado con éxito!')
+                            .then(() => {
+                                document.getElementById('panel-editar-usuario').style.display = 'none';
+                                document.getElementById('contenedor-tabla-usuarios').style.display = 'block';
+                                cargarUsuarios();
+                            })
                     } else {
-                        alert("Error al guardar los cambios en la base de datos.");
+                        Alertas.error('¡Error!', 'Error al guardar los cambios en la base de datos.');
                     }
                 })
                 .catch(error => {
                     console.error("Error de conexión:", error);
-                    alert("El servidor no responde.");
+                    Alertas.error('¡Error!', 'El servidor no responde.');
                 });
         })
     }
@@ -345,26 +412,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Funcion eliminar usuario
     function eliminarUsuario(idUsuario, nombreUsuario) {
-        const confirmar = confirm(`¿Estás seguro que deseas eliminar ${nombreUsuario} de la Base De Datos?`)
-        if (confirmar) {
-            // Mandamos la orden con el id mediante la URL
-            fetch(`http://localhost:8081/api/usuarios?id=${idUsuario}`, {
-                method: 'DELETE'
+        Alertas.decision('¿Borrar el usuario?', `¿Estás seguro de eliminar el usuario de ${nombreUsuario}?`, 'Si, eliminar')
+            .then((resultado) => {
+                if (resultado.isConfirmed) {
+                    // Manda la orden con el id mediante la URL
+                    fetch(`http://localhost:8081/api/usuarios?id=${idUsuario}`, {
+                        method: 'DELETE'
+                    })
+                        .then(respuesta => {
+                            if (respuesta.ok) {
+                                Alertas.exito('¡Éxito!', 'Usuario eliminado correctamente.');
+                                // Recarga la tabla para que desaparezca visualmente
+                                cargarUsuarios();
+                            } else {
+                                Alertas.error('¡Error!', 'Hubo un error y no se pudo eliminar el usuario.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error al eliminar:", error);
+                            Alertas.error('¡Error!', 'El servidor no responde.');
+                        });
+                }
             })
-                .then(respuesta => {
-                    if (respuesta.ok) {
-                        alert("Usuario eliminado correctamente.");
-                        // Recarga la tabla para que desaparezca visualmente
-                        cargarUsuarios();
-                    } else {
-                        alert("Hubo un error y no se pudo eliminar el usuario.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error al eliminar:", error);
-                    alert("El servidor no responde.");
-                });
-        }
     }
 
     function prepararEdicionLibro(libro) {
@@ -407,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const categoriasSeleccionadas = Array.from(checkboxMarcados).map(cb => parseInt(cb.value));
 
             if (categoriasSeleccionadas.length === 0) {
-                alert("Por favor, seleccione al menos una categoría.")
+                Alertas.warning('¡Atención!', 'Por favor, seleccione al menos una categoría.')
                 return;
             }
             const libroEditado = {
@@ -429,13 +498,13 @@ document.addEventListener('DOMContentLoaded', () => {
             })
                 .then(respuesta => {
                     if (respuesta.ok) {
-                        alert("¡Libro actualizado correctamente!");
+                        Alertas.exito('¡Éxito!', '¡Libro actualizado correctamente!');
                         document.getElementById('panel-editar-libro').style.display = 'none';
                         document.getElementById('contenedor-tabla-libros').style.display = 'block';
                         document.getElementById('titulo-seccion').textContent = "Gestión de Libros";
                         cargarLibros(); // Recarga la tabla para ver los cambios
                     } else {
-                        alert("Hubo un error al actualizar el libro.");
+                        Alertas.error('¡Error!', 'Hubo un error al actualizar el libro.');
                     }
                 })
                 .catch(error => console.error("Error:", error));
@@ -444,24 +513,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Funcion para eliminar libros
     function eliminarLibro(idLibro, tituloLibro) {
-        const confirmar = confirm(`¿Seguro que desea eliminar "${tituloLibro}"?`)
-        if (confirmar) {
-            fetch(`http://localhost:8081/api/libros?id=${idLibro}`, {
-                method: 'DELETE'
+        Alertas.decision('¿Desea borrar el libro?', `¿Seguro que desea eliminar "${tituloLibro}"?`, 'Sí, eliminar')
+            .then((resultado) => {
+                if (resultado.isConfirmed) {
+                    fetch(`http://localhost:8081/api/libros?id=${idLibro}`, {
+                        method: 'DELETE'
+                    })
+                        .then(respuesta => {
+                            if (respuesta.ok) {
+                                Alertas.exito('¡Éxito!', 'Libro eliminado con exito.')
+                                // Recargar la tabla para que se vea que a sido eliminado
+                                cargarLibros();
+                            } else {
+                                Alertas.error('¡Error!', 'Hubo un error al eliminar el libro en la base de datos.');
+                            }
+                        }).catch(error => {
+                            console.error("Error al eliminar:", error);
+                            Alertas.error('¡Error!', 'El servidor no responde.');
+                        });
+                }
             })
-                .then(respuesta => {
-                    if (respuesta.ok) {
-                        alert('Libro eliminado con exito.')
-                        // Recargar la tabla para que se vea que a sido eliminado
-                        cargarLibros();
-                    } else {
-                        alert("Hubo un error al eliminar el libro en la base de datos.");
-                    }
-                }).catch(error => {
-                    console.error("Error al eliminar:", error);
-                    alert("El servidor no responde.");
-                });
-        }
     }
 
     cargarUsuarios();
@@ -505,7 +576,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cerrar sesion
     document.getElementById('btn-logout-admin').addEventListener('click', (e) => {
         e.preventDefault();
-        localStorage.clear();
-        window.location.href = "../index.html";
+        Alertas.exito('¡Sesión cerrada!', 'Volviendo a la página principal.')
+            .then(() => {
+                // Libera localStorege de los datos del usuario
+                localStorage.clear();
+                window.location.href = '../index.html';
+                // window.location.reload();
+            })
     })
 })

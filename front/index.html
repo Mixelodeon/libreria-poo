@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="./css/style.css">
     <!-- Librería de iconos (FontAwesome): Iconos del menu superior -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="./js/alertas.js"></script>
+    <script src="./js/index.js"></script>
 </head>
 
 <body>
@@ -44,8 +48,10 @@
                     </ul>
                 </li>
                 <!-- Iconos de acción -->
-                <li><a href="#" id="nav-deseos" title="Lista de Deseos"><i class="fas fa-heart"></i></a></li>
-                <li><a href="#" id="nav-carrito" title="Carrito"><i class="fas fa-shopping-cart"></i></a></li>
+                <li id="item-listaDeseo" style="display: none;"><a href="#" id="nav-deseos" title="Lista de Deseos"><i
+                            class="fas fa-heart"></i></a></li>
+                <li id="item-carrito" style="display: none;"><a href="#" id="nav-carrito" title="Carrito"><i
+                            class="fas fa-shopping-cart"></i></a></li>
                 <li>
                     <a href="./html/login.html" class="btn-login" id="enlace-usuario" title="Perfil">
                         <i class="fas fa-user"></i> <span id="texto-bienvenida"></span>
@@ -170,7 +176,6 @@
             <p>&copy; 2026 Librería POO. Todos los derechos reservados.</p>
         </div>
     </footer>
-    <script src="./js/index.js"></script>
 </body>
 
 </html>

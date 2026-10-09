@@ -1,6 +1,8 @@
 package PO_Objetos.Libreria.back;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -13,15 +15,13 @@ public class CarritoHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         // Permisos CORS
+        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
         if (exchange.getRequestMethod().equalsIgnoreCase("OPTIONS")) {
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
             exchange.sendResponseHeaders(204, -1);
             return;
         }
-
-        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 
         // Logica para añadir al carrito (POST)
         if (exchange.getRequestMethod().equalsIgnoreCase("POST")) {
@@ -96,9 +96,34 @@ public class CarritoHandler implements HttpHandler {
                 e.printStackTrace();
                 exchange.sendResponseHeaders(500, -1);
             }
-        }
+        } else if ("PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
+            try {
+                InputStream is = exchange.getRequestBody();
+                String cuerpo = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                // Extraer los datos del JSON
+                JsonObject json = JsonParser.parseString(cuerpo).getAsJsonObject();
 
-        else {
+                int idCarrito = json.get("id").getAsInt();
+                int nuevaCantidad = json.get("cantidad").getAsInt();
+
+                CarritoDAO carritoDAO = new CarritoDAO();
+                boolean exito = carritoDAO.actualizarCantidad(idCarrito, nuevaCantidad);
+
+                if (exito) {
+                    String respuesta = "{\"mensaje\": \"Cantidad actualizada con éxito\"}";
+                    exchange.getResponseHeaders().set("Content-Type", "application/json");
+                    exchange.sendResponseHeaders(200, respuesta.getBytes(StandardCharsets.UTF_8).length);
+                    OutputStream os = exchange.getResponseBody();
+                    os.write(respuesta.getBytes(StandardCharsets.UTF_8));
+                    os.close();
+                } else {
+                    exchange.sendResponseHeaders(500, -1);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                exchange.sendResponseHeaders(400, -1);
+            }
+        } else {
             exchange.sendResponseHeaders(405, -1);
         }
     }

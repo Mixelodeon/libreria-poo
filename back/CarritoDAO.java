@@ -116,4 +116,20 @@ public class CarritoDAO {
         return pedidos;
     }
 
+    public boolean actualizarCantidad(int idCarrito, int nuevaCantidad) {
+        String sql = "UPDATE carrito SET cantidad = ? WHERE id = ?";
+        try (Connection conexion = ConexionBD.getConexion();
+                PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setInt(1, nuevaCantidad);
+            ps.setInt(2, idCarrito);
+            // executeUpdate devuelve el número de filas afectadas. Si es mayor a 0, se
+            // actualizo bien.
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar la cantidad en el carrito: " + e.getMessage());
+            return false;
+        }
+    }
+
 }
